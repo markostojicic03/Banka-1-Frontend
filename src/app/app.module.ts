@@ -8,6 +8,9 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { LoginComponent } from './core/components/login/login.component';
 
+import { EmployeeModule } from './features/employee/employee.module';
+
+
 import { FormsModule } from '@angular/forms';
 
 @NgModule({
@@ -19,7 +22,9 @@ import { FormsModule } from '@angular/forms';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    EmployeeModule
+
 
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
