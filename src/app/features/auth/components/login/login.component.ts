@@ -57,7 +57,7 @@ export class LoginComponent {
   }
 
   public goToForgotPassword(): void {
-    this.router.navigate(['/forgot-password']);
+    this.router.navigate(['auth/forgot-password']);
   }
 
   public goToLanding(): void {

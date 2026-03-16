@@ -19,15 +19,15 @@ const routes: Routes = [
 
   },
   {
-    path: 'forgot-password',
+    path: 'auth/forgot-password',
     component: ForgotPasswordComponent
   },
   {
-    path: 'reset-password',
+    path: 'auth/reset-password',
     component: ResetPasswordComponent
   },
   {
-    path: 'activate-account',
+    path: 'auth/activate-account',
     component: ActivateAccountComponent
   }
 ];

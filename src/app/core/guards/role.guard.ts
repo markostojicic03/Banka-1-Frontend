@@ -6,16 +6,16 @@ import { CanActivateFn, Router, ActivatedRouteSnapshot } from '@angular/router';
  * Koristi se kao fallback ukoliko backend ne vrati permisije direktno.
  */
 export const ROLE_PERMISSIONS: Record<string, string[]> = {
-  EmployeeBasic: [
+  Basic: [
     'BANKING_BASIC',
     'CLIENT_MANAGE'
   ],
-  EmployeeAgent: [
+  Agent: [
     'BANKING_BASIC',
     'CLIENT_MANAGE',
     'SECURITIES_TRADE_LIMITED'
   ],
-  EmployeeSupervisor: [
+  Supervisor: [
     'BANKING_BASIC',
     'CLIENT_MANAGE',
     'SECURITIES_TRADE_LIMITED',
@@ -24,7 +24,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'OTC_TRADE',
     'FUND_AGENT_MANAGE'
   ],
-  EmployeeAdmin: [
+  Admin: [
     'BANKING_BASIC',
     'CLIENT_MANAGE',
     'SECURITIES_TRADE_LIMITED',
@@ -57,8 +57,9 @@ export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   // Ako ruta nema definisanu permisiju, propusti
   if (!requiredPermission) return true;
 
-  // Koristimo permisije iz tokena, a kao fallback uzimamo permisije definisane po roli
-  const userPermissions = parsedUser.permissions ??
+  // Koristimo permisije iz tokena, a ako su prazne ili nedostaju, uzimamo permisije po roli
+  const userPermissions = (parsedUser.permissions && parsedUser.permissions.length > 0) ?
+    parsedUser.permissions :
     ROLE_PERMISSIONS[parsedUser.role] ?? [];
 
   if (!userPermissions.includes(requiredPermission)) {

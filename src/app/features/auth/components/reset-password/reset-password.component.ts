@@ -66,7 +66,7 @@ export class ResetPasswordComponent implements OnInit {
   public togglePasswordVisibility(): void { this.isPasswordVisible = !this.isPasswordVisible; }
   public toggleConfirmPasswordVisibility(): void { this.isConfirmPasswordVisible = !this.isConfirmPasswordVisible; }
 
-  public goToForgotPassword(): void { this.router.navigate(['/forgot-password']); }
+  public goToForgotPassword(): void { this.router.navigate(['auth/forgot-password']); }
   public goToLogin(): void { this.router.navigate(['/login']); }
 
   public onPasswordBlur(): void {
@@ -154,15 +154,15 @@ export class ResetPasswordComponent implements OnInit {
     this.isLoading = true;
 
     this.authService.resetPassword(this.resetId, this.confirmationToken, this.password.trim()).subscribe({
-      next: () => {
+      next: (message: string) => {
         this.isLoading = false;
-        this.successMessage = 'Password successfully reset.';
-        this.toastService.success('Password successfully reset. Redirecting...');
+        this.successMessage = message || 'Password successfully reset.';
+        this.toastService.success(message || 'Password successfully reset. Redirecting...');
         setTimeout(() => this.router.navigate(['/login']), 2000);
       },
       error: (error: HttpErrorResponse) => {
         this.isLoading = false;
-        this.generalErrorMessage = error.error?.message || error.error?.error || 'Failed to reset password. Please try again.';
+        this.generalErrorMessage = error.error?.message || error.error || 'Failed to reset password. Please try again.';
         this.toastService.error(this.generalErrorMessage);
       }
     });

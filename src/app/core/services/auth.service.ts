@@ -98,12 +98,14 @@ export class AuthService {
     id: number,
     confirmationToken: string,
     password: string
-  ): Observable<unknown> {
-    return this.http.post<unknown>(`${environment.apiUrl}/auth/resetPassword`, {
+  ): Observable<string> {
+    return this.http.post<string>(`${environment.apiUrl}/auth/resetPassword`, {
       id,
       confirmationToken,
       password
-    });
+    },
+    { responseType: 'text' as 'json' }
+    );
   }
 
   /**
@@ -129,12 +131,14 @@ export class AuthService {
     id: number,
     confirmationToken: string,
     password: string
-  ): Observable<unknown> {
-    return this.http.post<unknown>(`${environment.apiUrl}/auth/activate`, {
+  ): Observable<string> {
+    return this.http.post<string>(`${environment.apiUrl}/auth/activate`, {
       id,
       confirmationToken,
       password
-    });
+    },
+    { responseType: 'text' as 'json' }
+    );
   }
 
   /**
