@@ -21,6 +21,13 @@ const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { permission: 'EMPLOYEE_MANAGE_ALL' }
   },
+  // F2 — Lista računa klijenta
+  {
+    path: 'accounts',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/client/client.module').then(m => m.ClientModule)
+  },
   {
     path: '403',
     component: ForbiddenComponent

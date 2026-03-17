@@ -1,0 +1,123 @@
+<div class="account-list-page">
+    <h1 class="page-title">LISTA RAČUNA</h1>
+
+    <!-- Loading -->
+    <div class="state-box" *ngIf="isLoading">
+        <p>Učitavanje računa...</p>
+    </div>
+
+    <!-- Error -->
+    <div class="state-box state-box--error" *ngIf="errorMessage && !isLoading">
+        <p>{{ errorMessage }}</p>
+    </div>
+
+    <!-- Empty -->
+    <div class="state-box" *ngIf="!isLoading && !errorMessage && accounts.length === 0">
+        <p>Nema aktivnih računa.</p>
+    </div>
+
+    <!-- Main layout: 2 kolone -->
+    <div class="main-layout" *ngIf="!isLoading && accounts.length > 0">
+
+        <!-- ===== LEVO: Lista računa ===== -->
+        <div class="panel accounts-panel">
+            <p class="panel-label">RAČUNI</p>
+
+            <div class="accounts-list">
+                <div
+                        class="account-row"
+                        *ngFor="let account of accounts"
+                        [class.account-row--active]="isSelected(account)"
+                        (click)="selectAccount(account)"
+                        role="button"
+                        [attr.aria-selected]="isSelected(account)"
+                        tabindex="0"
+                        (keydown.enter)="selectAccount(account)"
+                >
+                    <!-- Thumbnail sa gradijentom -->
+                    <div class="account-thumb" [ngClass]="getAccountGradient(account)">
+                        <span class="account-thumb__currency">{{ account.currency }}</span>
+                    </div>
+
+                    <!-- Naziv i maskirani broj -->
+                    <div class="account-info">
+                        <span class="account-info__name">{{ account.name }}</span>
+                        <span class="account-info__number">{{ maskAccountNumber(account.accountNumber) }}</span>
+                    </div>
+
+                    <!-- Raspoloživo stanje -->
+                    <div class="account-balance">
+                        <span class="account-balance__label">Raspoloživo</span>
+                        <span class="account-balance__amount">
+              {{ formatAmount(account.availableBalance) }} {{ account.currency }}
+            </span>
+                    </div>
+
+                    <!-- Detalji dugme -->
+                    <button
+                            class="btn-details"
+                            (click)="goToDetails(account, $event)"
+                            type="button"
+                            [attr.aria-label]="'Detalji računa ' + account.name"
+                    >
+                        DETALJI &rsaquo;
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== DESNO: Podešavanja selektovanog računa ===== -->
+        <div class="panel settings-panel" *ngIf="selectedAccount">
+            <p class="panel-label">PODEŠAVANJA</p>
+
+            <div class="settings-list">
+                <button class="settings-item" type="button">Promeni naziv</button>
+                <button class="settings-item" type="button">Prikaži podatke o računu</button>
+                <button class="settings-item" type="button">Promena limita</button>
+            </div>
+
+            <!-- Detalji selektovanog računa -->
+            <div class="account-detail-card">
+                <p class="panel-label">DETALJI RAČUNA</p>
+
+                <div class="detail-row">
+                    <span class="detail-row__label">TIP RAČUNA</span>
+                    <span class="detail-row__value">{{ getAccountLabel(selectedAccount) }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-row__label">VLASNIK</span>
+                    <span class="detail-row__value">{{ selectedAccount.ownerName }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-row__label">STATUS</span>
+                    <span class="detail-row__value detail-row__value--status">
+            {{ selectedAccount.status === 'ACTIVE' ? 'Aktivan' : 'Neaktivan' }}
+          </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-row__label">BROJ RAČUNA</span>
+                    <span class="detail-row__value detail-row__value--mono">{{ selectedAccount.accountNumber }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Transakcije (placeholder) ===== -->
+    <div class="transactions-section" *ngIf="selectedAccount && !isLoading">
+        <div class="panel transactions-panel">
+            <div class="transactions-header">
+                <p class="panel-label">LISTA TRANSAKCIJA PO RAČUNU</p>
+                <span class="transactions-account-name">{{ selectedAccount.name }}</span>
+            </div>
+
+            <!-- Placeholder dok se ne implementira F transakcije task -->
+            <div class="transactions-placeholder">
+                <p>Transakcije za ovaj račun biće prikazane ovde.</p>
+            </div>
+        </div>
+    </div>
+
+</div>

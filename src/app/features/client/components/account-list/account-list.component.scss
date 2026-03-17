@@ -1,0 +1,332 @@
+// ============================================================
+// Varijable — uskladiti sa globalnim dizajn sistemom kada
+// Figma bude finalizovana
+// ============================================================
+$color-bg:          #f4f5f7;
+$color-surface:     #ffffff;
+$color-border:      #e0e0e0;
+$color-primary:     #1a7f4b;   // zelena iz Figme
+$color-text:        #1a1a1a;
+$color-text-muted:  #6b7280;
+$color-selected-bg: #f0faf4;
+$color-selected-border: #1a7f4b;
+$radius:            8px;
+$shadow:            0 1px 3px rgba(0, 0, 0, 0.08);
+
+// ============================================================
+// Page
+// ============================================================
+.account-list-page {
+  padding: 24px 32px;
+  background-color: $color-bg;
+  min-height: 100%;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: $color-text;
+  margin: 0 0 20px;
+}
+
+// ============================================================
+// State boxes (loading / error / empty)
+// ============================================================
+.state-box {
+  padding: 32px;
+  text-align: center;
+  color: $color-text-muted;
+  font-size: 15px;
+
+  &--error {
+    color: #c0392b;
+  }
+}
+
+// ============================================================
+// Main 2-column layout
+// ============================================================
+.main-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 20px;
+  margin-bottom: 20px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ============================================================
+// Panel (shared card wrapper)
+// ============================================================
+.panel {
+  background: $color-surface;
+  border-radius: $radius;
+  border: 1px solid $color-border;
+  padding: 20px;
+  box-shadow: $shadow;
+}
+
+.panel-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  margin: 0 0 14px;
+}
+
+// ============================================================
+// Accounts list
+// ============================================================
+.accounts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.account-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color 0.15s, border-color 0.15s;
+
+  &:hover {
+    background-color: #f9fafb;
+  }
+
+  &--active {
+    background-color: $color-selected-bg;
+    border-color: $color-selected-border;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
+}
+
+// ============================================================
+// Account thumbnail (gradient mini-card)
+// ============================================================
+.account-thumb {
+  width: 52px;
+  height: 36px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__currency {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 0.05em;
+  }
+
+  // Gradijenti po tipu
+  &.thumb--blue    { background: linear-gradient(135deg, #667eea, #764ba2); }
+  &.thumb--purple  { background: linear-gradient(135deg, #a855f7, #6366f1); }
+  &.thumb--green   { background: linear-gradient(135deg, #22c55e, #16a34a); }
+  &.thumb--pink    { background: linear-gradient(135deg, #ec4899, #f43f5e); }
+  &.thumb--indigo  { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+  &.thumb--teal    { background: linear-gradient(135deg, #14b8a6, #0891b2); }
+  &.thumb--orange  { background: linear-gradient(135deg, #f97316, #ea580c); }
+  &.thumb--red     { background: linear-gradient(135deg, #ef4444, #dc2626); }
+  &.thumb--amber   { background: linear-gradient(135deg, #f59e0b, #d97706); }
+  &.thumb--cyan    { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+  &.thumb--slate   { background: linear-gradient(135deg, #64748b, #475569); }
+}
+
+// ============================================================
+// Account info (naziv + broj)
+// ============================================================
+.account-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  &__name {
+    font-size: 14px;
+    font-weight: 600;
+    color: $color-text;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__number {
+    font-size: 12px;
+    color: $color-text-muted;
+    font-family: 'Courier New', monospace;
+  }
+}
+
+// ============================================================
+// Account balance
+// ============================================================
+.account-balance {
+  text-align: right;
+  flex-shrink: 0;
+
+  &__label {
+    display: block;
+    font-size: 10px;
+    color: $color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 2px;
+  }
+
+  &__amount {
+    font-size: 14px;
+    font-weight: 700;
+    color: $color-text;
+  }
+}
+
+// ============================================================
+// Detalji button
+// ============================================================
+.btn-details {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: $color-primary;
+  background: transparent;
+  border: 1px solid $color-primary;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: $color-primary;
+    color: #fff;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
+}
+
+// ============================================================
+// Settings panel (desna kolona)
+// ============================================================
+.settings-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-item {
+  width: 100%;
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 14px;
+  color: $color-text;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+
+  &:hover {
+    background-color: #f9fafb;
+    border-color: #bbb;
+  }
+}
+
+// ============================================================
+// Account detail card (unutar desnog panela)
+// ============================================================
+.account-detail-card {
+  border-top: 1px solid $color-border;
+  padding-top: 16px;
+}
+
+.detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  background: #f9fafb;
+  border: 1px solid $color-border;
+  border-radius: 6px;
+  margin-bottom: 8px;
+
+  &__label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: $color-text-muted;
+    text-transform: uppercase;
+  }
+
+  &__value {
+    font-size: 13px;
+    font-weight: 500;
+    color: $color-text;
+
+    &--status {
+      color: $color-primary;
+      font-weight: 600;
+    }
+
+    &--mono {
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      word-break: break-all;
+    }
+  }
+}
+
+// ============================================================
+// Transactions section (placeholder)
+// ============================================================
+.transactions-section {
+  margin-top: 4px;
+}
+
+.transactions-panel {
+  // inherits .panel
+}
+
+.transactions-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.transactions-account-name {
+  font-size: 13px;
+  color: $color-text-muted;
+}
+
+.transactions-placeholder {
+  padding: 40px 24px;
+  text-align: center;
+  border: 1px dashed $color-border;
+  border-radius: 6px;
+  color: $color-text-muted;
+  font-size: 14px;
+}
