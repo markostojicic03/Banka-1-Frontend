@@ -10,7 +10,7 @@ describe('AccountCreateComponent', () => {
   let component: AccountCreateComponent;
   let fixture: ComponentFixture<AccountCreateComponent>;
   let clientServiceSpy: jasmine.SpyObj<ClientService>;
-
+    
   beforeEach(async () => {
     clientServiceSpy = jasmine.createSpyObj('ClientService', ['getAllClients']);
     clientServiceSpy.getAllClients.and.returnValue(of([
@@ -100,19 +100,13 @@ describe('AccountCreateComponent', () => {
       throw new Error('Should be on step 2');
     }
 
-    const companyTaxId = component.form.get('companyTaxId');
-    companyTaxId?.setValue('');
-    companyTaxId?.markAsTouched();
+    const companyName = component.form.get('companyName');
+    companyName?.setValue('');
+    companyName?.markAsTouched();
     fixture.detectChanges();
 
-    if (!companyTaxId?.invalid) {
-      throw new Error('companyTaxId should be invalid when empty for business owner');
-    }
-
-    companyTaxId?.setValue('123456789');
-    fixture.detectChanges();
-    if (companyTaxId?.invalid) {
-      throw new Error('companyTaxId should be valid after setting a value');
+    if (!companyName?.invalid) {
+      throw new Error('companyName should be invalid when empty for business owner');
     }
   });
 });

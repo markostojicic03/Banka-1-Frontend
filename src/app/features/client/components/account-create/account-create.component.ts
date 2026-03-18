@@ -1,11 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { ClientService, ClientDto } from '../../services/client.service';
 import { AccountService } from '../../services/account.service';
-
+import { NavbarComponent } from '../../../../shared/components/navbar/navbar.component';
+import { type ClientDto, ClientService } from '../../services/client.service';
 /**
  * Tip računa.
  */
@@ -74,7 +75,9 @@ interface CreateClientNavigationState {
 @Component({
   selector: 'app-account-create',
   templateUrl: './account-create.component.html',
-  styleUrls: ['./account-create.component.scss']
+  styleUrls: ['./account-create.component.scss'],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, NavbarComponent]
 })
 export class AccountCreateComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
@@ -110,7 +113,6 @@ export class AccountCreateComponent implements OnInit, OnDestroy {
   constructor(
     private readonly fb: FormBuilder,
     private readonly router: Router,
-    private readonly route: ActivatedRoute,
     private readonly clientService: ClientService,
     private readonly accountService: AccountService
   ) {}
@@ -425,9 +427,9 @@ export class AccountCreateComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (items: ClientDto[]) => {
-          this.clients = items.map((c) => ({
-            id: String(c.id),
-            name: c.name ?? `${c.firstName ?? ''} ${c.lastName ?? ''}`.trim()
+          this.clients = items.map((client) => ({
+            id: String(client.id),
+            name: client.ime ?? `${client.ime ?? ''} ${client.prezime  ?? ''}`.trim()
           }));
         },
         error: (err: unknown) => {

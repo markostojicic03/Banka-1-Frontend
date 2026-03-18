@@ -1,3 +1,5 @@
+<app-navbar></app-navbar>
+
 <div class="client-list-page">
   <header class="hero">
     <div class="hero__content">
@@ -20,7 +22,7 @@
           <input
             type="text"
             name="firstName"
-            [(ngModel)]="filters.firstName"
+            [(ngModel)]="filters.ime"
             (input)="onFiltersChange()"
             placeholder="Ime"
           />
@@ -30,7 +32,7 @@
           <input
             type="text"
             name="lastName"
-            [(ngModel)]="filters.lastName"
+            [(ngModel)]="filters.prezime"
             (input)="onFiltersChange()"
             placeholder="Prezime"
           />

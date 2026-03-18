@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ClientService } from '../../services/client.service';
 
 @Component({
   selector: 'app-client-detail',
   templateUrl: './client-detail.component.html',
-  styleUrls: ['./client-detail.component.css']
+  styleUrls: ['./client-detail.component.css'],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule]
 })
 export class ClientDetailComponent implements OnInit {
   clientForm: FormGroup;
@@ -68,7 +71,7 @@ onSubmit(): void {
 
     this.clientService.updateClient(this.clientId, updateData).subscribe({
       next: () => {
-        this.router.navigate(['/employees/clients']);
+        this.router.navigate(['/clients']);
       },
       error: (err: any) => {
         this.isLoading = false;
@@ -84,6 +87,6 @@ onSubmit(): void {
 }
 
   onCancel(): void {
-    this.router.navigate(['/employees/clients']);
+    this.router.navigate(['/clients']);
   }
 }

@@ -1,22 +1,23 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import {
-  ClientDto,
-  ClientFilters,
-  ClientPageResponse,
-  ClientService
-} from '../../services/client.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { NavbarComponent } from '../../../../shared/components/navbar/navbar.component';
+import { ClientDto, ClientFilters, ClientPageResponse, ClientService } from '../../services/client.service';
 
 @Component({
   selector: 'app-client-list',
   templateUrl: './client-list.component.html',
-  styleUrls: ['./client-list.component.scss']
+  styleUrls: ['./client-list.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule, NavbarComponent],
 })
 export class ClientListComponent implements OnInit, OnDestroy {
   public clients: ClientDto[] = [];
   public filters: Required<ClientFilters> = {
-    firstName: '',
-    lastName: '',
+    ime: '',
+    prezime: '',
     email: ''
   };
   public isLoading = false;
@@ -53,8 +54,8 @@ export class ClientListComponent implements OnInit, OnDestroy {
 
   public clearFilters(): void {
     this.filters = {
-      firstName: '',
-      lastName: '',
+      ime: '',
+      prezime: '',
       email: ''
     };
     this.currentPage = 0;
@@ -75,19 +76,19 @@ export class ClientListComponent implements OnInit, OnDestroy {
   }
 
   public getFullName(client: ClientDto): string {
-    const firstName = client.ime ?? client.firstName ?? '';
-    const lastName = client.prezime ?? client.lastName ?? '';
+    const firstName = client.ime ?? '';
+    const lastName = client.prezime ?? '';
     const fullName = `${firstName} ${lastName}`.trim();
 
-    return fullName || client.name || '-';
+    return fullName || '-';
   }
 
   public getPhoneNumber(client: ClientDto): string {
-    return client.brojTelefona?.trim() || client.phoneNumber?.trim() || '-';
+    return client.brojTelefona?.trim() || client.brojTelefona?.trim() || '-';
   }
 
   public getDetailsLink(client: ClientDto): (string | number)[] {
-    return ['/employees/clients', client.id];
+    return ['/clients', client.id];
   }
 
   public getLastItem(): number {
@@ -137,6 +138,6 @@ export class ClientListComponent implements OnInit, OnDestroy {
   }
 
   private getSortableLastName(client: ClientDto): string {
-    return (client.prezime ?? client.lastName ?? '').trim();
+    return (client.prezime ?? '').trim();
   }
 }

@@ -1,14 +1,30 @@
-<div class="page-wrapper">
-  <app-navbar></app-navbar>
+<app-navbar />
 
+<div class="page-wrapper">
   <header class="navbar">
-    <div class="navbar-brand">
-      <img src="assets/images/logo.png" alt="Banka 1 logo" class="navbar-logo" />
-      <span>Banka 1</span>
-    </div>
+    <div class="navbar-brand"></div>
+
+     <button type="button" class="btn-logout" (click)="onCreateAccount()">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+        <path d="M16 17l5-5-5-5"></path>
+        <path d="M21 12H9"></path>
+      </svg>
+      Dodaj racun
+    </button>
 
     <button type="button" class="btn-logout">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
         <path d="M16 17l5-5-5-5"></path>
         <path d="M21 12H9"></path>
@@ -27,12 +43,18 @@
       </div>
 
       <!-- Error -->
-      <div class="state-box state-box--error" *ngIf="errorMessage && !isLoading">
+      <div
+        class="state-box state-box--error"
+        *ngIf="errorMessage && !isLoading"
+      >
         <p>{{ errorMessage }}</p>
       </div>
 
       <!-- Empty -->
-      <div class="state-box" *ngIf="!isLoading && !errorMessage && accounts.length === 0">
+      <div
+        class="state-box"
+        *ngIf="!isLoading && !errorMessage && accounts.length === 0"
+      >
         <p>Nema aktivnih računa.</p>
       </div>
 
@@ -52,19 +74,27 @@
               tabindex="0"
               (keydown.enter)="selectAccount(account)"
             >
-              <div class="account-thumb" [ngClass]="getAccountGradient(account)">
-                <span class="account-thumb__currency">{{ account.currency }}</span>
+              <div
+                class="account-thumb"
+                [ngClass]="getAccountGradient(account)"
+              >
+                <span class="account-thumb__currency">{{
+                  account.currency
+                }}</span>
               </div>
 
               <div class="account-info">
                 <span class="account-info__name">{{ account.name }}</span>
-                <span class="account-info__number">{{ maskAccountNumber(account.accountNumber) }}</span>
+                <span class="account-info__number">{{
+                  maskAccountNumber(account.accountNumber)
+                }}</span>
               </div>
 
               <div class="account-balance">
                 <span class="account-balance__label">Raspoloživo</span>
                 <span class="account-balance__amount">
-                  {{ formatAmount(account.availableBalance) }} {{ account.currency }}
+                  {{ formatAmount(account.availableBalance) }}
+                  {{ account.currency }}
                 </span>
               </div>
 
@@ -86,7 +116,9 @@
         <div class="panel transactions-panel">
           <div class="transactions-header">
             <p class="panel-label">LISTA TRANSAKCIJA PO RAČUNU</p>
-            <span class="transactions-account-name">{{ selectedAccount.name }}</span>
+            <span class="transactions-account-name">{{
+              selectedAccount.name
+            }}</span>
           </div>
 
           <div class="transactions-placeholder">
@@ -98,14 +130,16 @@
       <app-account-details-modal
         *ngIf="isDetailsModalOpen && detailsAccount"
         [account]="detailsAccount"
-        (close)="closeDetailsModal()">
+        (close)="closeDetailsModal()"
+      >
       </app-account-details-modal>
     </div>
   </main>
 </div>
 <app-account-details-modal
-        *ngIf="isDetailsModalOpen && detailsAccount"
-        [account]="detailsAccount"
-        [allAccounts]="accounts" 
-        (close)="closeDetailsModal()">
-      </app-account-details-modal>
+  *ngIf="isDetailsModalOpen && detailsAccount"
+  [account]="detailsAccount"
+  [allAccounts]="accounts"
+  (close)="closeDetailsModal()"
+>
+</app-account-details-modal>

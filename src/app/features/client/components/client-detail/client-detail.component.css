@@ -42,6 +42,7 @@
   font-size: 13px;
   font-weight: 600;
   text-decoration: none;
+  cursor: pointer;
   transition: all 0.2s ease;
 }
 
@@ -162,4 +163,29 @@
   padding: 12px 24px;
   border: none;
   border-radius: 8px;
+  background: #efefef;
+  color: #5e5e5e;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-cancel:hover {
+  background: #e7e7e7;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-card {
+    padding: 24px;
+  }
+
+  .client-detail-content {
+    padding: 40px 16px;
+  }
 }
