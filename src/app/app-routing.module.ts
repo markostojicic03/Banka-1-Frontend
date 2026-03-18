@@ -3,9 +3,9 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { EmployeeListComponent } from './features/employee/components/employee-list/employee-list.component';
 import { EmployeeCreateComponent } from './features/employee/components/employee-create/employee-create.component';
-import { AccountCreateComponent } from './features/employee/components/account-create/account-create.component';
-import { ClientListComponent } from './features/employee/components/client-list/client-list.component';
-import { ClientDetailComponent } from './features/employee/components/client-detail/client-detail.component';
+import { AccountCreateComponent } from './features/client/components/account-create/account-create.component';
+import { ClientListComponent } from './features/client/components/client-list/client-list.component';
+import { ClientDetailComponent } from './features/client/components/client-detail/client-detail.component';
 import { AccountListComponent } from './features/client/components/account-list/account-list.component';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
@@ -17,7 +17,7 @@ const routes: Routes = [
     path: 'home',
     loadChildren: () =>
       import('./features/client/client.module').then((m) => m.ClientModule),
-    //canActivate: [authGuard]
+    canActivate: [authGuard]
   },
   {
     path: 'employees/new',
@@ -26,22 +26,20 @@ const routes: Routes = [
     data: { permission: 'EMPLOYEE_MANAGE_ALL' }
   },
   {
-    path: 'employees/accounts/new',
+    path: 'accounts/new',
     component: AccountCreateComponent,
     canActivate: [authGuard, roleGuard],
     data: { permission: 'CLIENT_MANAGE' }
   },
   {
-    path: 'employees/clients',
+    path: 'clients',
     component: ClientListComponent,
-    //Treba da se zakomentarise ako se radi na ovome jer funkcionalnost za gardove jos nije sredjena
     canActivate: [authGuard, roleGuard], 
     data: { permission: 'CLIENT_MANAGE' }
   },
   {
-    path: 'employees/clients/:id',
+    path: 'clients/:id',
     component: ClientDetailComponent,
-    //Treba da se zakomentarise ako se radi na ovome jer funkcionalnost za gardove jos nije sredjena
     canActivate: [authGuard, roleGuard],
     data: { permission: 'CLIENT_MANAGE' } 
   },
@@ -58,7 +56,7 @@ const routes: Routes = [
   {
     path: 'accounts',
     component: AccountListComponent,
-    //canActivate: [authGuard],
+    canActivate: [authGuard],
   },
   {
     path: '403',

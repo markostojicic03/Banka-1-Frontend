@@ -1,11 +1,10 @@
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { AccountService } from '../../../core/services/account.service';
 import { Account } from '../../../core/models/account.model';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
+import { AccountService } from '../services/account.service';
 
 @Component({
   selector: 'app-home',

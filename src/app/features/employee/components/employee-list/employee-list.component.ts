@@ -139,4 +139,8 @@ export class EmployeeListComponent implements OnInit {
   onLogout(): void {
     this.authService.logout();
   }
+
+  onHome(): void {
+    this.authService.navigateToHome();
+  }
 }

@@ -7,23 +7,18 @@ import { of, delay } from 'rxjs';
 
 export interface ClientDto {
   id: string | number;
-  firstName?: string;
-  lastName?: string;
-  name?: string;
-  email?: string;
-  phoneNumber?: string;
   ime?: string;
   prezime?: string;
-  brojTelefona?: string;
-  jmbg?: string;
-  adresa?: string;
-  pol?: string;
   datumRodjenja?: number;
+  pol?: string;
+  email?: string;
+  brojTelefona?: string;
+  adresa?: string;
 }
 
 export interface ClientFilters {
-  firstName?: string;
-  lastName?: string;
+  ime?: string;
+  prezime?: string;
   email?: string;
 }
 
@@ -37,7 +32,7 @@ export interface ClientPageResponse {
 
 @Injectable({ providedIn: 'root' })
 export class ClientService {
-  private readonly base = `${environment.apiUrl}/customers`;
+  private readonly base = `${environment.clientApiUrl}/customers`;
 
   constructor(private http: HttpClient) {}
 
@@ -58,12 +53,12 @@ export class ClientService {
       .set('page', page.toString())
       .set('size', size.toString());
 
-    if (filters.firstName?.trim()) {
-      params = params.set('ime', filters.firstName.trim());
+    if (filters.ime?.trim()) {
+      params = params.set('ime', filters.ime.trim());
     }
 
-    if (filters.lastName?.trim()) {
-      params = params.set('prezime', filters.lastName.trim());
+    if (filters.prezime?.trim()) {
+      params = params.set('prezime', filters.prezime.trim());
     }
 
     if (filters.email?.trim()) {
@@ -71,7 +66,7 @@ export class ClientService {
     }
 
     return this.http
-      .get<ClientPageResponse | ClientDto[]>(this.base, { params })
+      .get<ClientPageResponse>(this.base, { params })
       .pipe(map((response) => this.normalizePageResponse(response, page, size)));
       
   }

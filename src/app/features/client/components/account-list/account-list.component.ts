@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AccountService } from '../../services/account.service';
 import { Account } from '../../models/account.model';
 import { NavbarComponent } from 'src/app/shared/components/navbar/navbar.component';
 import { AccountDetailsModalComponent } from '../../modals/account-details-modal/account-details-modal.component';
+import { AccountService } from '../../services/account.service';
 
 @Component({
   selector: 'app-account-list',
@@ -24,7 +24,7 @@ export class AccountListComponent implements OnInit {
 
   constructor(
     private readonly accountService: AccountService,
-    private readonly router: Router
+    private readonly router: Router,
   ) {}
 
   public ngOnInit(): void {
@@ -266,5 +266,9 @@ export class AccountListComponent implements OnInit {
     };
 
     return labels[account.subtype] ?? account.name;
+  }
+
+  public onCreateAccount(): void {
+    this.router.navigate(['/accounts/new']);
   }
 }

@@ -2,8 +2,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Account, ChangeLimitDto } from '../../models/account.model'; // prilagodi putanju ako treba
-import { AccountService } from '../../services/account.service'; // prilagodi putanju
 import { ToastService } from '../../../../shared/services/toast.service';
+import { AccountService } from '../../services/account.service';
 
 @Component({
   selector: 'app-change-limit-modal',
@@ -78,7 +78,7 @@ export class ChangeLimitModalComponent implements OnInit {
       verificationCode: formValue.verificationCode
     };
 
-    this.accountService.changeAccountLimits(this.account.id, payload)
+    this.accountService.changeLimit(this.account.id, payload.dailyLimit, payload.monthlyLimit)
       .subscribe({
         next: () => {
           this.toastService.success('Limiti računa su uspešno ažurirani.');

@@ -253,4 +253,8 @@ export class AuthService {
     const user = this.getLoggedUser();
     return !!user?.permissions?.includes(permission);
   }
+
+  navigateToHome(): void {
+    this.router.navigate(['/home']);
+  }
 }

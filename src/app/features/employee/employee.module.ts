@@ -6,18 +6,12 @@ import { RouterModule } from '@angular/router';
 import { EmployeeListComponent } from './components/employee-list/employee-list.component';
 import { EmployeeCreateComponent } from './components/employee-create/employee-create.component';
 import { EmployeeEditComponent } from './components/employee-edit/employee-edit.component';
-import { AccountCreateComponent } from './components/account-create/account-create.component';
-import { ClientListComponent } from './components/client-list/client-list.component';
-import { ClientDetailComponent } from './components/client-detail/client-detail.component';
 
 @NgModule({
   declarations: [
     EmployeeListComponent,
     EmployeeCreateComponent,
-    EmployeeEditComponent,
-    AccountCreateComponent,
-    ClientListComponent,
-    ClientDetailComponent
+    EmployeeEditComponent
   ],
   imports: [
     CommonModule,
