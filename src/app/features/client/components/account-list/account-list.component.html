@@ -103,3 +103,9 @@
     </div>
   </main>
 </div>
+<app-account-details-modal
+        *ngIf="isDetailsModalOpen && detailsAccount"
+        [account]="detailsAccount"
+        [allAccounts]="accounts" 
+        (close)="closeDetailsModal()">
+      </app-account-details-modal>

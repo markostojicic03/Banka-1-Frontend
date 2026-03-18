@@ -12,15 +12,7 @@
           <h2 class="modal-title">Account details</h2>
           <p class="modal-subtitle">Personal account overview</p>
         </div>
-
-        <button
-          type="button"
-          class="close-button"
-          (click)="closeModal()"
-          aria-label="Close modal"
-        >
-          <span>&times;</span>
-        </button>
+        <button type="button" class="close-button" (click)="closeModal()">&times;</button>
       </div>
 
       <div class="modal-body">
@@ -29,36 +21,6 @@
             <span class="detail-label">Account name</span>
             <span class="detail-value">{{ account.name }}</span>
           </div>
-
-          <div class="detail-row">
-            <span class="detail-label">Account number</span>
-            <span class="detail-value">{{ account.accountNumber }}</span>
-          </div>
-
-          <div class="detail-row">
-            <span class="detail-label">Owner</span>
-            <span class="detail-value">{{ account.ownerName }}</span>
-          </div>
-
-          <div class="detail-row">
-            <span class="detail-label">Type</span>
-            <span class="detail-value">{{ getAccountTypeLabel() }}</span>
-          </div>
-
-          <div class="detail-row">
-            <span class="detail-label">Available resources</span>
-            <span class="detail-value">
-              {{ formatAmount(account.availableBalance) }} {{ account.currency }}
-            </span>
-          </div>
-
-          <div class="detail-row">
-            <span class="detail-label">Reserved resources</span>
-            <span class="detail-value">
-              {{ formatAmount(account.reservedFunds) }} {{ account.currency }}
-            </span>
-          </div>
-
           <div class="detail-row detail-row-balance">
             <span class="detail-label">Balance</span>
             <span class="detail-value detail-value-strong">
@@ -70,18 +32,15 @@
 
       <div class="modal-actions-section">
         <p class="options-label">Options</p>
-
         <div class="options-list">
           <button type="button" class="option-item" (click)="onChangeAccountName()">
             <span class="option-text">Change account name</span>
             <span class="option-arrow">&gt;</span>
           </button>
-
           <button type="button" class="option-item" (click)="onNewPayment()">
             <span class="option-text">New payment</span>
             <span class="option-arrow">&gt;</span>
           </button>
-
           <button type="button" class="option-item option-item-limit" (click)="onChangeLimit()">
             <span class="option-text">Change limit</span>
             <span class="option-arrow">&gt;</span>
@@ -91,3 +50,11 @@
     </div>
   </div>
 </div>
+
+<app-rename-account-modal
+  *ngIf="showRenameModal && account"
+  [account]="account"
+  [allAccounts]="allAccounts"
+  (closed)="showRenameModal = false"
+  (updated)="onNameUpdated($event)"
+></app-rename-account-modal>

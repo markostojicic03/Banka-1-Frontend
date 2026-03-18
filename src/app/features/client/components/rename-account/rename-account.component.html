@@ -1,0 +1,35 @@
+<div class="modal-overlay">
+  <div class="modal-content">
+    <p class="subtitle">Pop up promena naziva</p>
+    <h2>Promena naziva računa</h2>
+
+    <form [formGroup]="renameForm">
+      <div class="field-container readonly">
+        <label>Naziv računa</label>
+        <div class="current-value">{{ account.name }}</div>
+      </div>
+
+      <div class="field-container">
+        <label for="newName">Novi naziv:</label>
+        <input 
+          id="newName" 
+          type="text" 
+          formControlName="newName" 
+          placeholder="Unesite novo ime..."
+          [class.invalid]="renameForm.get('newName')?.touched && renameForm.get('newName')?.invalid"
+        >
+        
+        <div class="error-msg" *ngIf="renameForm.get('newName')?.touched">
+          <small *ngIf="renameForm.get('newName')?.errors?.['required']">Polje je obavezno.</small>
+          <small *ngIf="renameForm.get('newName')?.errors?.['sameName']">Novo ime mora biti različito od trenutnog.</small>
+          <small *ngIf="renameForm.get('newName')?.errors?.['nameExists']">Ovaj naziv već postoji na drugom računu.</small>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="btn-back" (click)="onCancel()">Nazad</button>
+        <button type="button" class="btn-confirm" (click)="onConfirm()" [disabled]="renameForm.invalid">Potvrdi</button>
+      </div>
+    </form>
+  </div>
+</div>

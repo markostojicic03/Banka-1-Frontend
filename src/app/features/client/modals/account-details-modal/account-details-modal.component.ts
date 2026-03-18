@@ -1,44 +1,51 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Account } from '../../models/account.model';
-
+import { RenameAccountComponent } from '../../components/rename-account/rename-account.component';
 @Component({
   selector: 'app-account-details-modal',
   templateUrl: './account-details-modal.component.html',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RenameAccountComponent], // DODATO
   styleUrls: ['./account-details-modal.component.scss']
 })
 export class AccountDetailsModalComponent {
   @Input() public account: Account | null = null;
+  @Input() public allAccounts: Account[] = [];
   @Output() public close = new EventEmitter<void>();
+
+  // Flag za prikaz F5 modala
+  public showRenameModal = false;
 
   public closeModal(): void {
     this.close.emit();
   }
-  //TODO: otvoriti modal za promenu naziva (F5)
+
+  // F5: Otvaramo modal za promenu naziva
   public onChangeAccountName(): void {
-    console.log('Open change account name modal');
+    this.showRenameModal = true;
   }
 
-  //TODO: navigate na stranicu za novo placanje (sledeci sprint)
+  // Metoda koja prihvata novo ime iz deteta i ažurira prikaz
+  public onNameUpdated(newName: string): void {
+    if (this.account) {
+      this.account.name = newName;
+    }
+    this.showRenameModal = false;
+  }
+
+  // TODO: navigate na stranicu za novo placanje (sledeci sprint)
   public onNewPayment(): void {
     console.log('Open new payment flow');
   }
 
-  //TODO: otvoriti modal za promenu limita (F6)
+  // TODO: otvoriti modal za promenu limita (F6)
   public onChangeLimit(): void {
     console.log('Open change limit flow');
   }
 
-  /**
-   * Vraća naziv tipa računa za detaljan prikaz.
-   */
   public getAccountTypeLabel(): string {
-    if (!this.account) {
-      return '';
-    }
-
+    if (!this.account) return '';
     const labels: Record<string, string> = {
       STANDARD: 'Standardni tekući',
       SAVINGS: 'Štedni',
@@ -52,13 +59,9 @@ export class AccountDetailsModalComponent {
       FOREIGN_PERSONAL: 'Devizni lični',
       FOREIGN_BUSINESS: 'Devizni poslovni'
     };
-
     return labels[this.account.subtype] ?? this.account.name;
   }
 
-  /**
-   * Formatira brojčani iznos za prikaz.
-   */
   public formatAmount(amount: number): string {
     return new Intl.NumberFormat('sr-RS', {
       minimumFractionDigits: 2,
