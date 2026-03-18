@@ -32,6 +32,7 @@ export class AccountDetailsModalComponent {
   // Flag za prikaz F5 modala
   public showRenameModal = false;
 
+
   public closeModal(): void {
     this.close.emit();
   }
@@ -60,7 +61,24 @@ export class AccountDetailsModalComponent {
    * Otvara modal za promenu limita računa
    */
   public onChangeLimit(): void {
-    console.log('Open change limit flow');
+    this.isChangeLimitModalOpen = true;
+  }
+
+  /**
+   * Zatvara modal za promenu limita
+   */
+  public closeChangeLimitModal(): void {
+    this.isChangeLimitModalOpen = false;
+  }
+
+  /**
+   * Reaguje kada su limiti uspešno promenjeni
+   */
+  public onLimitUpdated(): void {
+    this.isChangeLimitModalOpen = false;
+    // Zatvaramo i glavni modal da bi se podaci osvežili u parent listi,
+    // ili možeš da ne zatvaraš nego samo ostaviš emit
+    this.closeModal();
   }
 
   /**
@@ -68,6 +86,7 @@ export class AccountDetailsModalComponent {
    */
   public getAccountTypeLabel(): string {
     if (!this.account) return '';
+
     const labels: Record<string, string> = {
       STANDARD: 'Standardni tekući',
       SAVINGS: 'Štedni',
