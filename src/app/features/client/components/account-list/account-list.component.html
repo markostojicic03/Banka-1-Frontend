@@ -1,50 +1,67 @@
-<div class="layout">
-  <app-navbar></app-navbar>
+<app-navbar />
 
-  <div class="main">
-    <header class="topbar">
-      <div class="topbar__left">
-        <span class="material-icons topbar__page-icon">account_balance</span>
-        <h1 class="topbar__title">Lista računa</h1>
-      </div>
-      <div class="topbar__right">
-        <button type="button" class="topbar__action-btn" (click)="onCreateAccount()">
-          <span class="material-icons">add</span>
-          <span>Dodaj račun</span>
-        </button>
-        <button class="topbar__icon-btn" title="Obaveštenja">
-          <span class="material-icons">notifications</span>
-        </button>
-      </div>
-    </header>
+<div class="page-wrapper">
+  <header class="navbar">
+    <div class="navbar-brand"></div>
 
-    <div class="content">
+     <button type="button" class="btn-logout" (click)="onCreateAccount()">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+        <path d="M16 17l5-5-5-5"></path>
+        <path d="M21 12H9"></path>
+      </svg>
+      Dodaj racun
+    </button>
+
+    <button type="button" class="btn-logout">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+        <path d="M16 17l5-5-5-5"></path>
+        <path d="M21 12H9"></path>
+      </svg>
+      Logout
+    </button>
+  </header>
+
+  <main class="content">
+    <div class="account-list-page">
+      <h1 class="page-title">LISTA RAČUNA</h1>
+
       <!-- Loading -->
-      <div class="state-card" *ngIf="isLoading">
-        <div class="skel skel--lg"></div>
-        <div class="skel skel--line"></div>
-        <div class="skel skel--line skel--short"></div>
+      <div class="state-box" *ngIf="isLoading">
+        <p>Učitavanje računa...</p>
       </div>
 
       <!-- Error -->
-      <div class="state-card state-card--error" *ngIf="errorMessage && !isLoading">
-        <span class="material-icons state-icon">error_outline</span>
+      <div
+        class="state-box state-box--error"
+        *ngIf="errorMessage && !isLoading"
+      >
         <p>{{ errorMessage }}</p>
       </div>
 
       <!-- Empty -->
-      <div class="state-card" *ngIf="!isLoading && !errorMessage && accounts.length === 0">
-        <span class="material-icons state-icon">account_balance_wallet</span>
+      <div
+        class="state-box"
+        *ngIf="!isLoading && !errorMessage && accounts.length === 0"
+      >
         <p>Nema aktivnih računa.</p>
       </div>
 
-      <!-- Računi -->
-      <div class="accounts-section" *ngIf="!isLoading && accounts.length > 0">
-        <div class="card">
-          <div class="card__head">
-            <span class="card__label">RAČUNI</span>
-            <span class="card__count">{{ accounts.length }}</span>
-          </div>
+      <!-- Lista računa -->
+      <div class="main-layout" *ngIf="!isLoading && accounts.length > 0">
+        <div class="panel accounts-panel">
+          <p class="panel-label">RAČUNI</p>
 
           <div class="accounts-list">
             <div
@@ -61,18 +78,23 @@
                 class="account-thumb"
                 [ngClass]="getAccountGradient(account)"
               >
-                <span class="account-thumb__currency">{{ account.currency }}</span>
+                <span class="account-thumb__currency">{{
+                  account.currency
+                }}</span>
               </div>
 
               <div class="account-info">
                 <span class="account-info__name">{{ account.name }}</span>
-                <span class="account-info__number">{{ maskAccountNumber(account.accountNumber) }}</span>
+                <span class="account-info__number">{{
+                  maskAccountNumber(account.accountNumber)
+                }}</span>
               </div>
 
               <div class="account-balance">
                 <span class="account-balance__label">Raspoloživo</span>
                 <span class="account-balance__amount">
-                  {{ formatAmount(account.availableBalance) }} {{ account.currency }}
+                  {{ formatAmount(account.availableBalance) }}
+                  {{ account.currency }}
                 </span>
               </div>
 
@@ -82,32 +104,42 @@
                 type="button"
                 [attr.aria-label]="'Detalji računa ' + account.name"
               >
-                Detalji
-                <span class="material-icons btn-details-icon">chevron_right</span>
+                DETALJI &rsaquo;
               </button>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Transakcije -->
-        <div class="card" *ngIf="selectedAccount">
-          <div class="card__head">
-            <span class="card__label">TRANSAKCIJE</span>
-            <span class="card__account-name">{{ selectedAccount.name }}</span>
+      <!-- Transakcije -->
+      <div class="transactions-section" *ngIf="selectedAccount && !isLoading">
+        <div class="panel transactions-panel">
+          <div class="transactions-header">
+            <p class="panel-label">LISTA TRANSAKCIJA PO RAČUNU</p>
+            <span class="transactions-account-name">{{
+              selectedAccount.name
+            }}</span>
           </div>
+
           <div class="transactions-placeholder">
-            <span class="material-icons placeholder-icon">receipt_long</span>
             <p>Transakcije za ovaj račun biće prikazane ovde.</p>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
 
+      <app-account-details-modal
+        *ngIf="isDetailsModalOpen && detailsAccount"
+        [account]="detailsAccount"
+        (close)="closeDetailsModal()"
+      >
+      </app-account-details-modal>
+    </div>
+  </main>
+</div>
 <app-account-details-modal
   *ngIf="isDetailsModalOpen && detailsAccount"
   [account]="detailsAccount"
   [allAccounts]="accounts"
   (close)="closeDetailsModal()"
-></app-account-details-modal>
+>
+</app-account-details-modal>

@@ -1,135 +1,126 @@
-<div class="layout">
-  <app-navbar></app-navbar>
+<app-navbar></app-navbar>
 
-  <div class="main">
-    <header class="topbar">
-      <div class="topbar__left">
-        <span class="material-icons topbar__page-icon">person</span>
-        <h1 class="topbar__title">Klijenti</h1>
+<div class="client-list-page">
+  <header class="hero">
+    <div class="hero__content">
+      <h1>Klijenti</h1>
+      <a class="hero__action" routerLink="/users/new">
+        <span>+</span>
+        Dodaj korisnika
+      </a>
+    </div>
+  </header>
+
+  <main class="client-list-content">
+    <section class="filters-section">
+      <div class="filters-shell">
+        <label class="filter-field filter-field--search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M20 20l-3.5-3.5"></path>
+          </svg>
+          <input
+            type="text"
+            name="firstName"
+            [(ngModel)]="filters.ime"
+            (input)="onFiltersChange()"
+            placeholder="Ime"
+          />
+        </label>
+
+        <label class="filter-field">
+          <input
+            type="text"
+            name="lastName"
+            [(ngModel)]="filters.prezime"
+            (input)="onFiltersChange()"
+            placeholder="Prezime"
+          />
+        </label>
+
+        <label class="filter-field">
+          <input
+            type="email"
+            name="email"
+            [(ngModel)]="filters.email"
+            (input)="onFiltersChange()"
+            placeholder="Email"
+          />
+        </label>
+
+        <button type="button" class="filters-reset" (click)="clearFilters()">
+          Resetuj
+        </button>
       </div>
-      <div class="topbar__right">
-        <a class="topbar__action-btn" routerLink="/users/new">
-          <span class="material-icons">person_add</span>
-          <span>Dodaj korisnika</span>
-        </a>
+    </section>
+
+    <section class="table-card">
+      <div class="table-state" *ngIf="isLoading">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Učitavanje klijenata...</p>
       </div>
-    </header>
 
-    <div class="content">
-      <!-- Filters -->
-      <div class="filters-card">
-        <div class="filters-grid">
-          <label class="filter-field">
-            <span class="material-icons filter-icon">search</span>
-            <input
-              type="text"
-              name="firstName"
-              [(ngModel)]="filters.ime"
-              (input)="onFiltersChange()"
-              placeholder="Ime"
-            />
-          </label>
+      <div class="table-state table-state--error" *ngIf="!isLoading && errorMessage">
+        <p>{{ errorMessage }}</p>
+      </div>
 
-          <label class="filter-field">
-            <input
-              type="text"
-              name="lastName"
-              [(ngModel)]="filters.prezime"
-              (input)="onFiltersChange()"
-              placeholder="Prezime"
-            />
-          </label>
+      <div class="table-state" *ngIf="!isLoading && !errorMessage && clients.length === 0">
+        <p>Nema klijenata za zadate filtere.</p>
+      </div>
 
-          <label class="filter-field">
-            <input
-              type="email"
-              name="email"
-              [(ngModel)]="filters.email"
-              (input)="onFiltersChange()"
-              placeholder="Email"
-            />
-          </label>
+      <div class="table-wrapper" *ngIf="!isLoading && !errorMessage && clients.length > 0">
+        <table>
+          <thead>
+            <tr>
+              <th>Ime i prezime</th>
+              <th>Email adresa</th>
+              <th>Broj telefona</th>
+              <th class="actions-column"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let client of clients; trackBy: trackByClientId">
+              <td class="name-cell">{{ getFullName(client) }}</td>
+              <td>{{ client.email || '-' }}</td>
+              <td>{{ getPhoneNumber(client) }}</td>
+              <td class="actions-cell">
+                <a class="btn-details" [routerLink]="getDetailsLink(client)">
+                  Detalji
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-          <button type="button" class="filters-reset" (click)="clearFilters()">
-            <span class="material-icons">restart_alt</span>
-            Resetuj
+      <footer
+        class="table-footer"
+        *ngIf="!isLoading && !errorMessage && totalElements > 0"
+      >
+        <span class="table-footer__summary">
+          {{ currentPage * pageSize + 1 }}-{{ getLastItem() }} od {{ totalElements }}
+        </span>
+
+        <div class="table-footer__controls">
+          <button
+            type="button"
+            class="pagination-btn"
+            (click)="goToPage(currentPage - 1)"
+            [disabled]="currentPage === 0"
+          >
+            Prethodna
+          </button>
+          <span>Strana {{ currentPage + 1 }} / {{ totalPages || 1 }}</span>
+          <button
+            type="button"
+            class="pagination-btn"
+            (click)="goToPage(currentPage + 1)"
+            [disabled]="currentPage >= totalPages - 1"
+          >
+            Sledeća
           </button>
         </div>
-      </div>
-
-      <!-- Table card -->
-      <div class="card">
-        <div class="table-state" *ngIf="isLoading">
-          <div class="spinner"></div>
-          <p>Učitavanje klijenata...</p>
-        </div>
-
-        <div class="table-state table-state--error" *ngIf="!isLoading && errorMessage">
-          <span class="material-icons state-icon">error_outline</span>
-          <p>{{ errorMessage }}</p>
-        </div>
-
-        <div class="table-state" *ngIf="!isLoading && !errorMessage && clients.length === 0">
-          <span class="material-icons state-icon">person_off</span>
-          <p>Nema klijenata za zadate filtere.</p>
-        </div>
-
-        <div class="table-wrapper" *ngIf="!isLoading && !errorMessage && clients.length > 0">
-          <table>
-            <thead>
-              <tr>
-                <th>Ime i prezime</th>
-                <th>Email adresa</th>
-                <th>Broj telefona</th>
-                <th class="actions-column"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let client of clients; trackBy: trackByClientId">
-                <td class="name-cell">{{ getFullName(client) }}</td>
-                <td>{{ client.email || '-' }}</td>
-                <td>{{ getPhoneNumber(client) }}</td>
-                <td class="actions-cell">
-                  <a class="btn-details" [routerLink]="getDetailsLink(client)">
-                    Detalji
-                    <span class="material-icons btn-details-icon">chevron_right</span>
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <footer
-          class="table-footer"
-          *ngIf="!isLoading && !errorMessage && totalElements > 0"
-        >
-          <span class="table-footer__summary">
-            {{ currentPage * pageSize + 1 }}-{{ getLastItem() }} od {{ totalElements }}
-          </span>
-          <div class="table-footer__controls">
-            <button
-              type="button"
-              class="pagination-btn"
-              (click)="goToPage(currentPage - 1)"
-              [disabled]="currentPage === 0"
-            >
-              <span class="material-icons">chevron_left</span>
-              Prethodna
-            </button>
-            <span class="pagination-info">{{ currentPage + 1 }} / {{ totalPages || 1 }}</span>
-            <button
-              type="button"
-              class="pagination-btn"
-              (click)="goToPage(currentPage + 1)"
-              [disabled]="currentPage >= totalPages - 1"
-            >
-              Sledeća
-              <span class="material-icons">chevron_right</span>
-            </button>
-          </div>
-        </footer>
-      </div>
-    </div>
-  </div>
+      </footer>
+    </section>
+  </main>
 </div>

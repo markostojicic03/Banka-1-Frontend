@@ -1,160 +1,144 @@
-$green:      #16a34a;
-$green-dark: #166534;
-$green-lite: #22c55e;
-$green-bg:   #f0fdf4;
-$topbar-bg:  #166534;
-$bg:         #f3f4f6;
-$white:      #ffffff;
-$text:       #1e293b;
-$muted:      #64748b;
-$border:     #e2e8f0;
-$radius:     12px;
+// ============================================================
+// Varijable — uskladiti sa globalnim dizajn sistemom kada
+// Figma bude finalizovana
+// ============================================================
+$color-bg:              #f8fafc;
+$color-surface:         #ffffff;
+$color-border:          #e2e8f0;
+$color-primary:         #16a34a;
+$color-primary-dark:    #166534;
+$color-text:            #1e293b;
+$color-text-muted:      #64748b;
+$color-selected-bg:     #f0fdf4;
+$color-selected-border: #22c55e;
+$radius:                12px;
+$shadow:                0 1px 3px rgba(0, 0, 0, 0.06);
 
-.layout {
-  display: flex;
+.page-wrapper {
   min-height: 100vh;
-  background: $bg;
+  background: #f8fafc;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  color: $text;
 }
 
-.main {
-  flex: 1;
-  margin-left: 220px;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-// ── Topbar ──────────────────────────────────────
-.topbar {
+.navbar {
+  background: linear-gradient(90deg, #14532d 0%, #15803d 50%, #16a34a 100%);
+  padding: 0 32px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: $topbar-bg;
-  padding: 0 28px;
-  height: 56px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-
-  &__left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  &__page-icon {
-    color: rgba($white, .7);
-    font-size: 22px;
-  }
-
-  &__title {
-    font-size: 17px;
-    font-weight: 700;
-    color: $white;
-    letter-spacing: -0.2px;
-    margin: 0;
-  }
-
-  &__right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  &__action-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 18px;
-    border-radius: 10px;
-    border: none;
-    background: linear-gradient(135deg, $green-lite, $green);
-    color: $white;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    box-shadow: 0 4px 12px rgba($green, .3);
-    transition: transform .15s, box-shadow .15s;
-    .material-icons { font-size: 18px; }
-    &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 18px rgba($green, .4);
-    }
-  }
-
-  &__icon-btn {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    border: none;
-    background: rgba($white, .1);
-    color: $white;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    transition: background .15s;
-    .material-icons { font-size: 20px; }
-    &:hover { background: rgba($white, .2); }
-  }
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
 
-// ── Content ─────────────────────────────────────
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.navbar-logo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.btn-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: white;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+  font-family: inherit;
+}
+
+.btn-logout svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-logout:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+}
+
 .content {
-  padding: 28px;
-  flex: 1;
-  max-width: 960px;
+  max-width: 1200px;
   margin: 0 auto;
-  width: 100%;
-  box-sizing: border-box;
+  padding: 32px;
 }
 
-// ── Card ────────────────────────────────────────
-.card {
-  background: $white;
-  border-radius: $radius;
-  padding: 24px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+// ============================================================
+// Page
+// ============================================================
+.account-list-page {
+  background-color: transparent;
+  min-height: auto;
+  padding: 0;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 24px;
+  letter-spacing: 0;
+}
+
+// ============================================================
+// State boxes (loading / error / empty)
+// ============================================================
+.state-box {
+  padding: 32px;
+  text-align: center;
+  color: $color-text-muted;
+  font-size: 15px;
+
+  &--error {
+    color: #c0392b;
+  }
+}
+
+// ============================================================
+// Main 2-column layout
+// ============================================================
+.main-layout {
   margin-bottom: 20px;
-  border: 1px solid $border;
-  transition: box-shadow .2s;
-
-  &:hover { box-shadow: 0 6px 20px rgba(0,0,0,.08); }
-
-  &__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    padding-bottom: 14px;
-    border-bottom: 1px solid #f1f5f9;
-  }
-
-  &__label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .7px;
-    color: $muted;
-    text-transform: uppercase;
-  }
-
-  &__count {
-    font-size: 12px;
-    font-weight: 700;
-    color: $green;
-    background: $green-bg;
-    padding: 4px 12px;
-    border-radius: 20px;
-  }
-
-  &__account-name {
-    font-size: 13px;
-    font-weight: 600;
-    color: $muted;
-  }
 }
 
-// ── Accounts List ───────────────────────────────
+// ============================================================
+// Panel (shared card wrapper)
+// ============================================================
+.panel {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.panel-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  margin: 0 0 16px;
+}
+
+// ============================================================
+// Accounts list
+// ============================================================
 .accounts-list {
   display: flex;
   flex-direction: column;
@@ -166,28 +150,31 @@ $radius:     12px;
   align-items: center;
   gap: 16px;
   padding: 16px 14px;
-  border-radius: $radius;
+  border-radius: 12px;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: background .15s, border-color .15s, box-shadow .15s;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
 
   &:hover {
-    background: $green-bg;
+    background: #f0fdf4;
     border-color: #bbf7d0;
   }
 
   &--active {
-    background: $green-bg;
-    border-color: $green-lite;
-    box-shadow: 0 2px 8px rgba($green-lite, .12);
+    background: $color-selected-bg;
+    border-color: $color-selected-border;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.08);
   }
 
   &:focus-visible {
-    outline: 2px solid $green;
+    outline: 2px solid $color-primary;
     outline-offset: 2px;
   }
 }
 
+// ============================================================
+// Account thumbnail (gradient mini-card)
+// ============================================================
 .account-thumb {
   width: 56px;
   height: 40px;
@@ -196,18 +183,19 @@ $radius:     12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 1px 0 rgba($white, .15);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
 
   &__currency {
     font-size: 11px;
     font-weight: 700;
-    color: rgba($white, .95);
-    letter-spacing: .05em;
+    color: rgba(255, 255, 255, 0.95);
+    letter-spacing: 0.05em;
   }
 
+  // Gradijenti po tipu
   &.thumb--blue    { background: linear-gradient(135deg, #667eea, #764ba2); }
   &.thumb--purple  { background: linear-gradient(135deg, #a855f7, #6366f1); }
-  &.thumb--green   { background: linear-gradient(135deg, $green-lite, $green); }
+  &.thumb--green   { background: linear-gradient(135deg, #22c55e, #16a34a); }
   &.thumb--pink    { background: linear-gradient(135deg, #ec4899, #f43f5e); }
   &.thumb--indigo  { background: linear-gradient(135deg, #6366f1, #4f46e5); }
   &.thumb--teal    { background: linear-gradient(135deg, #14b8a6, #0891b2); }
@@ -218,6 +206,9 @@ $radius:     12px;
   &.thumb--slate   { background: linear-gradient(135deg, #64748b, #475569); }
 }
 
+// ============================================================
+// Account info (naziv + broj)
+// ============================================================
 .account-info {
   flex: 1;
   min-width: 0;
@@ -228,7 +219,7 @@ $radius:     12px;
   &__name {
     font-size: 15px;
     font-weight: 600;
-    color: $text;
+    color: $color-text;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -236,11 +227,14 @@ $radius:     12px;
 
   &__number {
     font-size: 12px;
-    color: $muted;
+    color: $color-text-muted;
     font-family: 'Courier New', monospace;
   }
 }
 
+// ============================================================
+// Account balance
+// ============================================================
 .account-balance {
   text-align: right;
   flex-shrink: 0;
@@ -248,118 +242,87 @@ $radius:     12px;
   &__label {
     display: block;
     font-size: 11px;
-    color: $muted;
+    color: $color-text-muted;
     text-transform: uppercase;
-    letter-spacing: .05em;
+    letter-spacing: 0.05em;
     margin-bottom: 3px;
   }
 
   &__amount {
     font-size: 16px;
     font-weight: 700;
-    color: $text;
+    color: $color-text;
   }
 }
 
+// ============================================================
+// Detalji button
+// ============================================================
 .btn-details {
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   padding: 10px 18px;
   font-size: 13px;
   font-weight: 600;
-  color: $white;
-  background: linear-gradient(135deg, $green-dark, $green, $green-lite);
+  color: #ffffff;
+  background: linear-gradient(135deg, #166534, #16a34a, #22c55e);
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  transition: transform .15s, box-shadow .15s;
+  transition: transform 0.15s, box-shadow 0.15s;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba($green, .3);
-  font-family: inherit;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba($green, .4);
+    box-shadow: 0 6px 20px rgba(22, 163, 74, 0.4);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
   }
 }
 
-.btn-details-icon {
-  font-size: 18px;
+
+// ============================================================
+// Transactions section (placeholder)
+// ============================================================
+.transactions-section {
+  margin-top: 4px;
 }
 
-// ── Transactions placeholder ────────────────────
-.transactions-placeholder {
+
+.transactions-header {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.transactions-account-name {
+  font-size: 13px;
+  color: $color-text-muted;
+}
+
+.transactions-placeholder {
   padding: 40px 24px;
-  border: 1px dashed $border;
+  text-align: center;
+  border: 1px dashed $color-border;
   border-radius: 10px;
-  color: $muted;
+  color: $color-text-muted;
   font-size: 14px;
   background: #f8fafc;
 }
 
-.placeholder-icon {
-  font-size: 36px;
-  color: #cbd5e1;
-}
-
-// ── State cards ─────────────────────────────────
-.state-card {
-  background: $white;
-  border-radius: $radius;
-  padding: 48px 24px;
-  border: 1px solid $border;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  text-align: center;
-  color: $muted;
-
-  &--error { color: #dc2626; }
-}
-
-.state-icon {
-  font-size: 36px;
-  color: #cbd5e1;
-}
-
-.skel {
-  border-radius: 8px;
-  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.4s infinite;
-  &--lg    { height: 34px; width: 200px; margin-bottom: 20px; }
-  &--line  { height: 48px; width: 100%; margin-bottom: 16px; }
-  &--short { width: 55%; }
-}
-
-@keyframes shimmer {
-  0%   { background-position:  200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-// ── Responsive ──────────────────────────────────
 @media (max-width: 768px) {
-  .main { margin-left: 0; }
-  .content { padding: 16px; }
-
-  .account-row {
-    flex-wrap: wrap;
+  .content {
+    padding: 20px 16px;
   }
 
-  .account-balance {
-    text-align: left;
-    flex-basis: 100%;
-    margin-left: 72px;
-  }
-
-  .btn-details {
-    margin-left: auto;
+  .navbar {
+    padding: 0 16px;
   }
 }
