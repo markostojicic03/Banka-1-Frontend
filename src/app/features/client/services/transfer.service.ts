@@ -27,13 +27,36 @@ export interface TransferResponse {
   type: string;
 }
 
+export interface TransferPreview {
+  fromAccount: string;
+  toAccount: string;
+  fromCurrency: string;
+  toCurrency: string;
+  originalAmount: number;
+  exchangeRate: number;
+  commission: number;
+  commissionCurrency: string;
+  finalAmount: number;
+  ownerName: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class TransferService {
   private readonly baseUrl = `${environment.apiUrl}/transfers`;
 
   constructor(private http: HttpClient) {}
-
-  transferSameCurrency(request: TransferRequest): Observable<TransferResponse> {
+  
+   transferSameCurrency(request: TransferRequest): Observable<TransferResponse> {
     return this.http.post<TransferResponse>(`${this.baseUrl}/same-currency`, request);
   }
+
+  transferDifferentCurrency(request: TransferRequest): Observable<TransferResponse> {
+    return this.http.post<TransferResponse>(`${this.baseUrl}/different-currency`, request);
+  }
+
+  previewTransfer(request: TransferRequest): Observable<TransferPreview> {
+    return this.http.post<TransferPreview>(`${this.baseUrl}/preview`, request);
+  }
+    
+ 
 }

@@ -7,6 +7,7 @@ import { AccountCreateComponent } from './features/client/components/account-cre
 import { ClientListComponent } from './features/client/components/client-list/client-list.component';
 import { ClientDetailComponent } from './features/client/components/client-detail/client-detail.component';
 import { AccountListComponent } from './features/client/components/account-list/account-list.component';
+import { TransferDiffComponent } from './features/client/components/transfer-diff/transfer-diff.component';
 import { TransferSameComponent } from './features/client/components/transfer-same/transfer-same.component';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
@@ -65,11 +66,19 @@ const routes: Routes = [
     component: AccountListComponent,
     canActivate: [authGuard],
   },
+  
   {
-    path: 'transfers/same',
-    component: TransferSameComponent,
-    canActivate: [authGuard]
+  path: 'transfers/different',
+  component: TransferDiffComponent,
+  canActivate: [authGuard]
   },
+    
+  {
+  path: 'transfers/same',
+  component: TransferSameComponent,
+  canActivate: [authGuard]
+  },
+    
   {
     path: '403',
     component: ForbiddenComponent
