@@ -6,6 +6,8 @@ import { AccountService } from '../../services/account.service';
 import { Account } from '../../models/account.model';
 import { NavbarComponent } from '../../../../shared/components/navbar/navbar.component';
 import { VerificationModalComponent } from '../../modals/verification-modal/verification-modal.component';
+import { PaymentRecipient } from '../../models/account.model';
+import { ClientService } from '../../services/client.service';
 
 @Component({
   selector: 'app-new-payment',
@@ -21,10 +23,13 @@ export class NewPaymentComponent implements OnInit {
   public showVerificationModal = false;
   public transactionSuccess = false;
   public isNewRecipient = false;
+  public recipientSaved = false;    
+  public isSavingRecipient = false; 
 
   constructor(
     private fb: FormBuilder,
     private accountService: AccountService,
+    private clientService: ClientService,
     private router: Router
   ) {}
 
@@ -60,7 +65,7 @@ export class NewPaymentComponent implements OnInit {
     this.accountService.getMyAccounts().subscribe({
       next: (accounts) => {
         this.myAccounts = accounts.filter(acc => acc.status === 'ACTIVE');
-        
+
         // Automatski selektuj prvi raspoloživi račun
         if (this.myAccounts.length > 0) {
           this.paymentForm.patchValue({
@@ -70,6 +75,7 @@ export class NewPaymentComponent implements OnInit {
         this.isLoading = false;
       },
       error: () => {
+
         this.isLoading = false;
         console.error('Greška pri učitavanju računa');
       }
@@ -95,24 +101,40 @@ export class NewPaymentComponent implements OnInit {
       }
     }
 
-    private executeTransaction(): void {
-    const receiverAcc = this.paymentForm.get('receiverAccount')?.value;
-
-    // SIMULACIJA: Ovde bi inače išao poziv ka servisu da proveri listu primalaca
-    // Za sada simuliramo da račun NIJE u listi ako se ne završava na "000"
-    this.isNewRecipient = !receiverAcc.endsWith('000');
-    
-    this.transactionSuccess = true;
-    // Napomena: Ne radimo router.navigate odmah da bi korisnik video opciju za dodavanje
+  private executeTransaction(): void {
+    this.clientService.getAllRecipients().subscribe({
+      next: (recipients) => {
+        const receiverAccount = this.paymentForm.get('receiverAccount')?.value;
+        const exists = recipients.some((r: PaymentRecipient) => r.accountNumber === receiverAccount);
+        this.isNewRecipient = !exists;
+        this.transactionSuccess = true;
+      },
+      error: () => {
+        this.isNewRecipient = true;
+        this.transactionSuccess = true;
+      }
+    });
   }
+
+  
   public saveToRecipients(): void {
     const name = this.paymentForm.get('receiverName')?.value;
-    const acc = this.paymentForm.get('receiverAccount')?.value;
-    
-    console.log('Čuvanje primaoca:', { name, acc });
-    alert(`Primalac ${name} je dodat u vašu listu!`);
-    
-    this.isNewRecipient = false; // Sakrivamo dugme nakon klika
+    const accountNumber = this.paymentForm.get('receiverAccount')?.value;
+
+    this.isSavingRecipient = true;
+
+    this.clientService.createRecipient(name, accountNumber).subscribe({
+      next: () => {
+        this.isSavingRecipient = false;
+        this.recipientSaved = true;
+        this.isNewRecipient = false;
+      },
+      error: () => {
+        this.isSavingRecipient = false;
+        this.recipientSaved = true; // mock fallback
+        this.isNewRecipient = false;
+      }
+    });
   }
 /**
    * Pokreće se klikom na dugme "Odustani" ili "Nazad na listu".

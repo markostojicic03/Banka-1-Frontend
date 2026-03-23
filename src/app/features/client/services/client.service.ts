@@ -128,4 +128,6 @@ export class ClientService {
   deleteRecipient(id: number): Observable<void> {
     return this.http.delete<void>(`${environment.apiUrl}/payment-recipients/${id}`);
   }
+
+
 }
