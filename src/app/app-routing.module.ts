@@ -14,6 +14,8 @@ import { roleGuard } from './core/guards/role.guard';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { ForbiddenComponent } from './shared/components/forbidden/forbidden.component';
 import { NewPaymentComponent } from './features/client/components/new-payment/new-payment.component';
+import { AccountManagementComponent } from './features/employee/account-management/account-management.component';
+import { AccountCardsPlaceholderComponent } from './features/employee/account-cards-placeholder/account-cards-placeholder.component';
 
 const routes: Routes = [
   {
@@ -66,6 +68,18 @@ const routes: Routes = [
     component: AccountListComponent,
     canActivate: [authGuard],
   },
+  {
+  path: 'account-management',
+  component: AccountManagementComponent,
+  canActivate: [authGuard, roleGuard],
+  data: { permission: 'CLIENT_MANAGE' }
+},
+{
+  path: 'account-cards',
+  component: AccountCardsPlaceholderComponent,
+  canActivate: [authGuard, roleGuard],
+  data: { permission: 'CLIENT_MANAGE' }
+},
   
   {
   path: 'transfers/different',

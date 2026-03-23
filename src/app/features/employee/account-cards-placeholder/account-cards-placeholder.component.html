@@ -1,0 +1,75 @@
+<div class="account-cards-page">
+  <div class="content-wrapper">
+    <div class="page-header">
+      <div>
+        <h1>Kartice vezane za račun</h1>
+      </div>
+    </div>
+
+    <div class="account-info-card">
+      <h2>Informacije o računu</h2>
+
+      <div class="account-info-grid">
+        <div class="info-item">
+          <span class="label">Broj računa</span>
+          <span class="value">{{ accountNumber }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Vlasnik</span>
+          <span class="value">{{ ownerName }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Tip vlasništva</span>
+          <span class="value">{{ ownershipType }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Tip računa</span>
+          <span class="value">{{ accountType }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Status računa</span>
+          <span class="value">{{ status }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-title-row">
+        <h2>Spisak kartica</h2>
+      </div>
+
+      <table class="cards-table">
+        <thead>
+          <tr>
+            <th>Broj kartice</th>
+            <th>Vlasnik kartice</th>
+            <th>Email adresa</th>
+            <th>Status kartice</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let card of cards; trackBy: trackByCard">
+            <td>{{ card.cardNumber }}</td>
+            <td>{{ card.ownerName }}</td>
+            <td>{{ card.ownerEmail }}</td>
+            <td>
+              <span
+                class="status-badge"
+                [class.active]="card.status === 'Aktivna'"
+                [class.blocked]="card.status === 'Blokirana'"
+                [class.deactivated]="card.status === 'Deaktivirana'"
+              >
+                {{ card.status }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

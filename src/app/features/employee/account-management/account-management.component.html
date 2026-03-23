@@ -1,0 +1,116 @@
+<div class="account-management-page">
+  <div class="content-wrapper">
+
+    <div class="page-header">
+      <div class="header-left">
+        <div class="filters-row">
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            (input)="onSearch()"
+            placeholder="Pretraga po imenu, prezimenu ili broju računa"
+          />
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" class="header-icon-btn" title="Valuta">💲</button>
+        <span class="welcome-text">Dobro došli</span>
+        <div class="avatar-circle">👤</div>
+      </div>
+    </div>
+
+    <h2 class="section-title">Računi klijenata</h2>
+
+    <div *ngIf="isLoading" class="loading">
+      Učitavanje...
+    </div>
+
+    <div *ngIf="!isLoading && filteredAccounts.length === 0" class="empty">
+      Nema podataka za prikaz.
+    </div>
+
+    <div *ngIf="!isLoading && filteredAccounts.length > 0" class="table-card">
+      <table class="accounts-table">
+        <thead>
+          <tr>
+            <th>Ime <span class="sort-icon">↕</span></th>
+            <th>Broj računa <span class="sort-icon">↕</span></th>
+            <th>Vrsta</th>
+            <th>Tip vlasnistva</th>
+            <th>Status</th>
+            <th>Akcija</th>
+          </tr>
+        </thead>
+
+        <tbody>
+<tr
+  *ngFor="let account of filteredAccounts; trackBy: trackByAccount"
+  class="clickable-row"
+  (click)="openAccountCards(account)"
+>            <td>{{ account.ownerName }}</td>
+            <td>{{ account.accountNumber }}</td>
+
+            <td>
+              <span class="pill">
+                {{ getAccountType(account) }}
+              </span>
+            </td>
+
+            <td>{{ getOwnershipType(account) }}</td>
+
+            <td>
+              <span
+                class="status-badge"
+                [class.active]="account.status === 'ACTIVE'"
+                [class.inactive]="account.status === 'INACTIVE'"
+              >
+                {{ getStatusLabel(account.status) }}
+              </span>
+            </td>
+
+            <td class="actions">
+              <button
+                type="button"
+                class="action-btn"
+                [class.activate]="account.status !== 'ACTIVE'"
+                [class.deactivate]="account.status === 'ACTIVE'"
+                (click)="$event.stopPropagation(); openConfirmModal(account)"              >
+                {{ account.status === 'ACTIVE' ? 'Deaktiviraj' : 'Aktiviraj' }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="showConfirmModal" class="modal-backdrop">
+      <div class="confirm-modal">
+        <div class="modal-header">
+          <h3>Potvrda akcije</h3>
+        </div>
+
+        <div class="modal-body">
+          <p>
+            Da li ste sigurni da želite
+            <strong>
+              {{ selectedAccount?.status === 'ACTIVE' ? 'deaktivirati' : 'aktivirati' }}
+            </strong>
+            račun
+            <strong>{{ selectedAccount?.accountNumber }}</strong>?
+          </p>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="modal-btn cancel-btn" (click)="closeConfirmModal()">
+            Otkaži
+          </button>
+          <button type="button" class="modal-btn confirm-btn" (click)="confirmToggleAccountStatus()">
+            Potvrdi
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

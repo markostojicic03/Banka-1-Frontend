@@ -19,5 +19,6 @@ export class NavbarComponent {
     { label: 'Menjačnica', route: '/exchange',            icon: 'currency_exchange' },
     { label: 'Kartice',    route: '/cards',               icon: 'credit_card' },
     { label: 'Krediti',    route: '/loans',               icon: 'account_balance_wallet' },
+    {label: 'Upravljanje računima',route: '/account-management',icon: 'account_balance'},
   ];
 }

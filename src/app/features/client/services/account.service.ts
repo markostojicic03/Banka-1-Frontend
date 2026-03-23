@@ -43,4 +43,21 @@ export class AccountService {
   createAccount(payload: any): Observable<any> {
     return this.http.post(this.baseUrl, payload);
   }
+
+  /**
+   * Employee endpoint for all accounts in the system.
+   */
+  getAllAccounts(): Observable<Account[]> {
+    return this.http.get<Account[]>(`${environment.apiUrl}/accounts`);
+  }
+
+  /**
+   * Activate/deactivate account by account ID.
+   * Backend endpoint is expected to accept status update.
+   */
+  updateAccountStatus(id: number, status: 'ACTIVE' | 'INACTIVE'): Observable<void> {
+    return this.http.patch<void>(`${environment.apiUrl}/accounts/${id}/status`, {
+      status
+    });
+  }
 }
