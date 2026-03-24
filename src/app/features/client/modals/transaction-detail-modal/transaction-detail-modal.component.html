@@ -1,0 +1,112 @@
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal-shell" (click)="$event.stopPropagation()" *ngIf="payment">
+    <div class="bg-decoration">
+      <div class="bg-circle bg-circle-1"></div>
+      <div class="bg-circle bg-circle-2"></div>
+      <div class="bg-circle bg-circle-3"></div>
+    </div>
+
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">Transaction details</h2>
+          <p class="modal-subtitle">{{ payment.orderNumber }}</p>
+        </div>
+
+        <button
+          type="button"
+          class="close-button"
+          (click)="closeModal()"
+          aria-label="Close modal"
+        >
+          <span>&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="details-grid">
+          <div class="detail-row">
+            <span class="detail-label">Broj naloga</span>
+            <span class="detail-value">{{ payment.orderNumber }}</span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">Primalac</span>
+            <span class="detail-value">{{ payment.recipientName }}</span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">Sa računa</span>
+            <span class="detail-value">{{ payment.payerAccountNumber }}</span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">Na račun</span>
+            <span class="detail-value">{{ payment.recipientAccountNumber }}</span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">Početni iznos</span>
+            <span class="detail-value">
+        {{ formatAmount(payment.initialAmount) }} {{ payment.currency }}
+      </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">Krajnji iznos</span>
+            <span class="detail-value">
+        {{ formatAmount(payment.finalAmount) }} {{ payment.currency }}
+      </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">Provizija</span>
+            <span class="detail-value">
+        {{ formatAmount(payment.fee) }} {{ payment.currency }}
+      </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">Šifra plaćanja</span>
+            <span class="detail-value">{{ payment.paymentCode || '-' }}</span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">Poziv na broj</span>
+            <span class="detail-value">{{ payment.referenceNumber || '-' }}</span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">Svrha plaćanja</span>
+            <span class="detail-value">{{ payment.purpose || '-' }}</span>
+          </div>
+
+          <div class="detail-row detail-row-balance detail-row-wide">
+            <span class="detail-label">Timestamp</span>
+            <span class="detail-value detail-value-strong">
+        {{ formatTimestamp(payment.timestamp) }}
+      </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions-section">
+        <p class="options-label">Options</p>
+
+        <div class="options-list">
+          <button
+            type="button"
+            class="option-item option-item-limit option-item-print"
+            (click)="printReceipt()"
+          >
+            <span class="option-content">
+              <span class="material-icons option-icon">print</span>
+              <span class="option-text">Štampaj potvrdu</span>
+            </span>
+            <span class="option-arrow">&gt;</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

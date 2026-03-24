@@ -8,80 +8,71 @@ import { takeUntil, debounceTime } from 'rxjs/operators';
 import { NavbarComponent } from '../../../../shared/components/navbar/navbar.component';
 import { PaymentService } from '../../services/payment.service';
 import { Payment, PaymentFilters, PaymentStatus } from '../../models/payment.model';
+import { TransactionDetailModalComponent } from '../../modals/transaction-detail-modal/transaction-detail-modal.component';
 
-/**
- * Komponenta za pregled plaćanja (Payment History)
- * Prikazuje listu svih transakcija sa filterima i paginacijom
- */
 @Component({
   selector: 'app-payment-history',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NavbarComponent, TransactionDetailModalComponent],
   templateUrl: './payment-history.component.html',
   styleUrls: ['./payment-history.component.scss']
 })
 export class PaymentHistoryComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
-  private filterChange$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
 
-  // Podaci
   payments: Payment[] = [];
   isLoading = false;
   errorMessage = '';
 
-  // Paginacija
   currentPage = 0;
   pageSize = 10;
   totalElements = 0;
   totalPages = 0;
 
-  // Filteri
   filters: PaymentFilters = {
     dateFrom: '',
     dateTo: '',
     amountFrom: undefined,
     amountTo: undefined,
-    status: ''
+    status: '',
+    type: 'DOMESTIC'
   };
 
-  // Opcije za filter period
-  selectedPeriod = '7';
-  periodOptions = [
-    { value: '7', label: 'Prethodnih 7 dana' },
-    { value: '30', label: 'Prethodnih 30 dana' },
-    { value: '90', label: 'Prethodna 3 meseca' },
-    { value: 'all', label: 'Sve' }
+  draftFilters: PaymentFilters = {
+    dateFrom: '',
+    dateTo: '',
+    amountFrom: undefined,
+    amountTo: undefined,
+    status: '',
+    type: 'DOMESTIC'
+  };
+
+  activeTab: 'domestic' | 'transfers' = 'domestic';
+  isFilterOpen = false;
+
+  selectedPayment: Payment | null = null;
+  isDetailsModalOpen = false;
+
+  statusOptions: { value: PaymentStatus | ''; label: string }[] = [
+    { value: '', label: 'Svi statusi' },
+    { value: 'REALIZED', label: 'Realizovano' },
+    { value: 'PROCESSING', label: 'U obradi' },
+    { value: 'REJECTED', label: 'Odbijeno' }
   ];
 
-  // Aktivni tab
-  activeTab: 'domestic' | 'transfers' = 'domestic';
+  constructor(private readonly paymentService: PaymentService) {}
 
-  constructor(private paymentService: PaymentService) {}
-
-  ngOnInit(): void {
-    // Debounce za filtere
-    this.filterChange$
-      .pipe(
-        debounceTime(300),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(() => {
-        this.currentPage = 0;
-        this.loadPayments();
-      });
-
+  public ngOnInit(): void {
+    this.syncDraftFilters();
     this.loadPayments();
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  /**
-   * Učitavanje plaćanja sa servera
-   */
-  loadPayments(): void {
+  public loadPayments(): void {
     this.isLoading = true;
     this.errorMessage = '';
 
@@ -95,90 +86,81 @@ export class PaymentHistoryComponent implements OnInit, OnDestroy {
           this.totalPages = page.totalPages;
           this.isLoading = false;
         },
-        error: (err) => {
-          console.error('Greška pri učitavanju plaćanja:', err);
+        error: (error) => {
+          console.error('Greška pri učitavanju plaćanja:', error);
           this.errorMessage = 'Došlo je do greške pri učitavanju plaćanja.';
           this.isLoading = false;
         }
       });
   }
 
-  /**
-   * Handler za promenu filtera
-   */
-  onFiltersChange(): void {
-    this.filterChange$.next();
-  }
+  public toggleFilterPanel(): void {
+    this.isFilterOpen = !this.isFilterOpen;
 
-  /**
-   * Promena perioda iz dropdown-a
-   */
-  onPeriodChange(): void {
-    const today = new Date();
-    let dateFrom: Date | null = null;
-
-    switch (this.selectedPeriod) {
-      case '7':
-        dateFrom = new Date(today);
-        dateFrom.setDate(today.getDate() - 7);
-        break;
-      case '30':
-        dateFrom = new Date(today);
-        dateFrom.setDate(today.getDate() - 30);
-        break;
-      case '90':
-        dateFrom = new Date(today);
-        dateFrom.setDate(today.getDate() - 90);
-        break;
-      case 'all':
-        dateFrom = null;
-        break;
+    if (this.isFilterOpen) {
+      this.syncDraftFilters();
     }
-
-    this.filters.dateFrom = dateFrom ? this.formatDateForInput(dateFrom) : '';
-    this.filters.dateTo = '';
-    this.onFiltersChange();
   }
 
-  /**
-   * Resetovanje svih filtera
-   */
-  clearFilters(): void {
+  public closeFilterPanel(): void {
+    this.isFilterOpen = false;
+  }
+
+  public applyFilters(): void {
+    this.filters = {
+      ...this.draftFilters,
+      type: this.activeTab === 'domestic' ? 'DOMESTIC' : 'TRANSFER'
+    };
+
+    this.currentPage = 0;
+    this.loadPayments();
+    this.closeFilterPanel();
+  }
+
+  public clearFilters(): void {
     this.filters = {
       dateFrom: '',
       dateTo: '',
       amountFrom: undefined,
       amountTo: undefined,
-      status: ''
+      status: '',
+      type: this.activeTab === 'domestic' ? 'DOMESTIC' : 'TRANSFER'
     };
-    this.selectedPeriod = '7';
+
+    this.syncDraftFilters();
     this.currentPage = 0;
     this.loadPayments();
+    this.closeFilterPanel();
   }
 
-  /**
-   * Promena stranice
-   */
-  goToPage(page: number): void {
+  public goToPage(page: number): void {
     if (page >= 0 && page < this.totalPages) {
       this.currentPage = page;
       this.loadPayments();
     }
   }
 
-  /**
-   * Promena taba
-   */
-  setActiveTab(tab: 'domestic' | 'transfers'): void {
+  public setActiveTab(tab: 'domestic' | 'transfers'): void {
     this.activeTab = tab;
-    // TODO: Filtriranje po tipu transakcije kada backend podrži
+    this.filters.type = tab === 'domestic' ? 'DOMESTIC' : 'TRANSFER';
+    this.draftFilters.type = this.filters.type;
+    this.currentPage = 0;
+    this.loadPayments();
   }
 
-  /**
-   * Formatiranje datuma za prikaz
-   */
-  formatDate(dateStr: string): string {
+  public openTransactionDetails(payment: Payment): void {
+    this.selectedPayment = payment;
+    this.isDetailsModalOpen = true;
+  }
+
+  public closeTransactionDetails(): void {
+    this.isDetailsModalOpen = false;
+    this.selectedPayment = null;
+  }
+
+  public formatDate(dateStr: string): string {
     const date = new Date(dateStr);
+
     return date.toLocaleDateString('sr-RS', {
       day: '2-digit',
       month: '2-digit',
@@ -186,28 +168,16 @@ export class PaymentHistoryComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * Formatiranje datuma za input polje
-   */
-  private formatDateForInput(date: Date): string {
-    return date.toISOString().split('T')[0];
-  }
-
-  /**
-   * Formatiranje iznosa
-   */
-  formatAmount(amount: number): string {
+  public formatAmount(amount: number): string {
     const prefix = amount >= 0 ? '+' : '';
+
     return prefix + new Intl.NumberFormat('sr-RS', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     }).format(amount);
   }
 
-  /**
-   * Vraća CSS klasu za status
-   */
-  getStatusClass(status: PaymentStatus): string {
+  public getStatusClass(status: PaymentStatus): string {
     switch (status) {
       case 'REALIZED':
         return 'status--realized';
@@ -220,15 +190,12 @@ export class PaymentHistoryComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Vraća label za status
-   */
-  getStatusLabel(status: PaymentStatus): string {
+  public getStatusLabel(status: PaymentStatus): string {
     switch (status) {
       case 'REALIZED':
-        return 'ODOBRENO';
+        return 'REALIZOVANO';
       case 'PROCESSING':
-        return 'ČEKANJE';
+        return 'U OBRADI';
       case 'REJECTED':
         return 'ODBIJENO';
       default:
@@ -236,17 +203,17 @@ export class PaymentHistoryComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Vraća poslednji item za paginaciju
-   */
-  getLastItem(): number {
+  public getLastItem(): number {
     return Math.min((this.currentPage + 1) * this.pageSize, this.totalElements);
   }
 
-  /**
-   * TrackBy funkcija za ngFor
-   */
-  trackByPaymentId(index: number, payment: Payment): number {
+  public trackByPaymentId(index: number, payment: Payment): number {
     return payment.id;
+  }
+
+  private syncDraftFilters(): void {
+    this.draftFilters = {
+      ...this.filters
+    };
   }
 }

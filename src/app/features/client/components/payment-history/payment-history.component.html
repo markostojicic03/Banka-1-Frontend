@@ -2,11 +2,10 @@
   <app-navbar></app-navbar>
 
   <div class="main">
-    <!-- Topbar -->
     <header class="topbar">
       <div class="topbar__search">
         <span class="material-icons">search</span>
-        <input type="text" placeholder="Transakcije, računi, kartice..." />
+        <input type="text" placeholder="Transakcije, računi, kartice." />
       </div>
 
       <div class="topbar__right">
@@ -27,7 +26,6 @@
       <h1 class="page-heading">PREGLED PLAĆANJA</h1>
 
       <div class="card">
-        <!-- Tabovi -->
         <div class="tabs">
           <button
             class="tab"
@@ -45,85 +43,119 @@
           </button>
         </div>
 
-        <!-- Header sekcije -->
         <div class="section-header">
           <h2 class="section-title">Pregled plaćanja</h2>
-          <div class="period-select">
-            <select [(ngModel)]="selectedPeriod" (change)="onPeriodChange()">
-              <option *ngFor="let opt of periodOptions" [value]="opt.value">
-                {{ opt.label }}
-              </option>
-            </select>
+
+          <div class="filter-toolbar">
+            <button
+              type="button"
+              class="filter-btn"
+              (click)="toggleFilterPanel()"
+            >
+              <span class="material-icons">filter_list</span>
+              Filteri
+            </button>
+
+            <div class="filter-panel-backdrop" *ngIf="isFilterOpen" (click)="closeFilterPanel()"></div>
+
+            <div class="filter-panel" *ngIf="isFilterOpen">
+              <div class="filter-panel__header">
+                <h3>Filteri</h3>
+                <button type="button" class="filter-panel__close" (click)="closeFilterPanel()">
+                  <span class="material-icons">close</span>
+                </button>
+              </div>
+
+              <div class="filter-fields">
+                <div class="filter-group">
+                  <label for="dateFrom">Datum od</label>
+                  <input id="dateFrom" type="date" [(ngModel)]="draftFilters.dateFrom" />
+                </div>
+
+                <div class="filter-group">
+                  <label for="dateTo">Datum do</label>
+                  <input id="dateTo" type="date" [(ngModel)]="draftFilters.dateTo" />
+                </div>
+
+                <div class="filter-group">
+                  <label for="amountFrom">Iznos od</label>
+                  <input id="amountFrom" type="number" min="0" [(ngModel)]="draftFilters.amountFrom" placeholder="0.00" />
+                </div>
+
+                <div class="filter-group">
+                  <label for="amountTo">Iznos do</label>
+                  <input id="amountTo" type="number" min="0" [(ngModel)]="draftFilters.amountTo" placeholder="0.00" />
+                </div>
+
+                <div class="filter-group">
+                  <label for="status">Status</label>
+                  <select id="status" [(ngModel)]="draftFilters.status">
+                    <option *ngFor="let status of statusOptions" [value]="status.value">
+                      {{ status.label }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="filter-panel__actions">
+                <button type="button" class="clear-filters-btn" (click)="clearFilters()">
+                  Reset
+                </button>
+                <button type="button" class="apply-filters-btn" (click)="applyFilters()">
+                  Primeni
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Tabela -->
         <div class="table-wrapper">
-          <!-- Loading state -->
           <div class="table-state" *ngIf="isLoading">
             <div class="spinner"></div>
-            <p>Učitavanje plaćanja...</p>
+            <p>Učitavanje plaćanja.</p>
           </div>
 
-          <!-- Error state -->
           <div class="table-state table-state--error" *ngIf="!isLoading && errorMessage">
             <p>{{ errorMessage }}</p>
           </div>
 
-          <!-- Empty state -->
           <div class="table-state" *ngIf="!isLoading && !errorMessage && payments.length === 0">
-            <p>Nema plaćanja za zadati period.</p>
+            <p>Nema plaćanja za zadate filtere.</p>
           </div>
 
-          <!-- Tabela sa podacima -->
           <table *ngIf="!isLoading && !errorMessage && payments.length > 0">
             <thead>
-              <tr>
-                <th class="sortable">
-                  DATUM
-                  <span class="sort-icon material-icons">unfold_more</span>
-                </th>
-                <th class="sortable">
-                  NAZIV PLATIOCA
-                  <span class="sort-icon material-icons">unfold_more</span>
-                </th>
-                <th class="sortable">
-                  VALUTA
-                  <span class="sort-icon material-icons">unfold_more</span>
-                </th>
-                <th class="sortable">
-                  IZNOS
-                  <span class="sort-icon material-icons">unfold_more</span>
-                </th>
-                <th class="sortable">
-                  STATUS
-                  <span class="sort-icon material-icons">unfold_more</span>
-                </th>
-              </tr>
+            <tr>
+              <th>DATUM</th>
+              <th>NAZIV PLATIOCA</th>
+              <th>VALUTA</th>
+              <th>IZNOS</th>
+              <th>STATUS</th>
+            </tr>
             </thead>
             <tbody>
-              <tr
-                *ngFor="let payment of payments; trackBy: trackByPaymentId"
-                class="table-row"
-              >
-                <td class="cell-date">{{ formatDate(payment.date) }}</td>
-                <td class="cell-name">{{ payment.payerName }}</td>
-                <td class="cell-currency">{{ payment.currency }}</td>
-                <td class="cell-amount">{{ formatAmount(payment.amount) }}</td>
-                <td class="cell-status">
+            <tr
+              *ngFor="let payment of payments; trackBy: trackByPaymentId"
+              class="table-row"
+              (click)="openTransactionDetails(payment)"
+            >
+              <td class="cell-date">{{ formatDate(payment.date) }}</td>
+              <td class="cell-name">{{ payment.payerName }}</td>
+              <td class="cell-currency">{{ payment.currency }}</td>
+              <td class="cell-amount">{{ formatAmount(payment.amount) }}</td>
+              <td class="cell-status">
                   <span
                     class="status-badge"
                     [ngClass]="getStatusClass(payment.status)"
                   >
                     {{ getStatusLabel(payment.status) }}
                   </span>
-                </td>
-              </tr>
+              </td>
+            </tr>
             </tbody>
           </table>
         </div>
 
-        <!-- Footer sa paginacijom -->
         <div class="table-footer" *ngIf="!isLoading && !errorMessage && totalElements > 0">
           <span class="table-footer__summary">
             Prikazuje se {{ currentPage * pageSize + 1 }} do {{ getLastItem() }} od {{ totalElements }} stavke
@@ -150,4 +182,10 @@
       </div>
     </div>
   </div>
+
+  <app-transaction-detail-modal
+    *ngIf="isDetailsModalOpen && selectedPayment"
+    [payment]="selectedPayment"
+    (close)="closeTransactionDetails()">
+  </app-transaction-detail-modal>
 </div>

@@ -1,39 +1,61 @@
-/**
- * Status plaćanja
- */
 export type PaymentStatus = 'REALIZED' | 'PROCESSING' | 'REJECTED';
+export type PaymentType = 'DOMESTIC' | 'TRANSFER';
 
-/**
- * Model za prikaz plaćanja u listi
- */
 export interface Payment {
-  /** ID plaćanja */
   id: number;
-  /** Datum plaćanja */
+
+  /** Datum za listu */
   date: string;
-  /** Naziv platioca */
+
+  /** Pun timestamp za detalje */
+  timestamp: string;
+
+  /** Broj naloga */
+  orderNumber: string;
+
+  /** Naziv platioca za prikaz u listi */
   payerName: string;
+
+  /** Primalac */
+  recipientName: string;
+
+  /** Sa računa */
+  payerAccountNumber: string;
+
+  /** Na račun */
+  recipientAccountNumber: string;
+
   /** Valuta */
   currency: string;
-  /** Iznos plaćanja (pozitivan ili negativan) */
+
+  /** Iznos za prikaz u listi */
   amount: number;
-  /** Status plaćanja */
+
+  /** Početni iznos */
+  initialAmount: number;
+
+  /** Krajnji iznos */
+  finalAmount: number;
+
+  /** Provizija */
+  fee: number;
+
+  /** Status */
   status: PaymentStatus;
-  /** Broj računa platioca */
-  payerAccountNumber?: string;
-  /** Broj računa primaoca */
-  recipientAccountNumber?: string;
+
+  /** Tip transakcije */
+  type: PaymentType;
+
   /** Svrha plaćanja */
   purpose?: string;
+
   /** Poziv na broj */
   referenceNumber?: string;
+
   /** Šifra plaćanja */
   paymentCode?: string;
 }
 
-/**
- * Paginirana lista plaćanja
- */
 export interface PaymentPage {
   content: Payment[];
   totalElements: number;
@@ -42,13 +64,11 @@ export interface PaymentPage {
   size: number;
 }
 
-/**
- * Filteri za pretragu plaćanja
- */
 export interface PaymentFilters {
   dateFrom?: string;
   dateTo?: string;
   amountFrom?: number;
   amountTo?: number;
   status?: PaymentStatus | '';
+  type?: PaymentType;
 }
