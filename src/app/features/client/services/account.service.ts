@@ -49,7 +49,7 @@ export class AccountService {
   }
 
   createAccount(payload: any): Observable<any> {
-    return this.http.post(this.baseUrl, payload);
+    return this.http.post(`${environment.apiUrl}/employee/accounts/fx`, payload);
   }
 
   /**

@@ -11,16 +11,16 @@ import { type ClientDto, ClientService } from '../../services/client.service';
  * Tip računa.
  */
 enum AccountKind {
-  TEKUCI = 'TEKUCI',
-  DEVIZNI = 'DEVIZNI'
+  CHECKING = 'CHECKING',
+  FX = 'FX'
 }
 
 /**
  * Tip vlasništva za devizni račun.
  */
 enum AccountOwnerType {
-  PERSONAL = 'personal',
-  BUSINESS = 'business'
+  PERSONAL = 'PERSONAL',
+  BUSINESS = 'BUSINESS'
 }
 
 /**
@@ -43,25 +43,26 @@ interface SelectOption<T> {
  * Podaci o firmi za poslovni račun.
  */
 interface CompanyPayload {
-  name: string;
-  registrationNumber: string;
-  taxId: string;
-  activityCode: string;
-  address: string;
+  naziv: string;
+  maticniBroj: string;
+  poreskiBroj: string;
+  sifraDelatnosti: string;
+  adresa: string;
+  vlasnik: number;
 }
 
 /**
  * Payload za kreiranje računa.
  */
 interface AccountCreatePayload {
-  kind: AccountKind;
-  subtype: string | null;
-  currency: string | null;
-  ownerType: AccountOwnerType;
-  ownerId: string;
-  createCard: boolean;
+  nazivRacuna: string;
+  idVlasnika: number;
+  jmbg: string;
+  currencyCode: string;
+  tipRacuna: AccountKind;
   initialBalance: number;
-  company?: CompanyPayload;
+  createCard: boolean;
+  firma?: CompanyPayload;
 }
 
 /**
@@ -86,8 +87,8 @@ export class AccountCreateComponent implements OnInit, OnDestroy {
   public submitted = false;
 
   public readonly accountKinds: SelectOption<AccountKind>[] = [
-    { value: AccountKind.TEKUCI, label: 'Tekući' },
-    { value: AccountKind.DEVIZNI, label: 'Devizni' }
+    { value: AccountKind.CHECKING, label: 'Tekući' },
+    { value: AccountKind.FX, label: 'Devizni' }
   ];
 
   public readonly tekuciPersonal: string[] = [
@@ -162,12 +163,12 @@ export class AccountCreateComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (this.selectedKind === AccountKind.TEKUCI && !subtypeControl?.valid) {
+    if (this.selectedKind === AccountKind.CHECKING && !subtypeControl?.valid) {
       return;
     }
 
     if (
-      this.selectedKind === AccountKind.DEVIZNI &&
+      this.selectedKind === AccountKind.FX &&
       (!currencyControl?.valid || !currencyOwnerTypeControl?.valid)
     ) {
       return;
@@ -199,11 +200,11 @@ export class AccountCreateComponent implements OnInit, OnDestroy {
    * Proverava da li trenutni izbor predstavlja poslovni račun.
    */
   public isBusiness(): boolean {
-    if (this.selectedKind === AccountKind.TEKUCI) {
+    if (this.selectedKind === AccountKind.CHECKING) {
       return this.tekuciBusiness.includes(this.selectedSubtype ?? '');
     }
 
-    if (this.selectedKind === AccountKind.DEVIZNI) {
+    if (this.selectedKind === AccountKind.FX) {
       return this.selectedOwnerType === AccountOwnerType.BUSINESS;
     }
 
@@ -222,28 +223,61 @@ export class AccountCreateComponent implements OnInit, OnDestroy {
       return;
     }
 
+// { OVAKO IZGLEDA OČEKIVANI PAYLOAD ZA KREIRANJE FX RAČUNA, API JE POST APIURL/employee/accounts/fx
+//   "nazivRacuna": "string",
+//   "idVlasnika": 0,
+//   "jmbg": "string",
+//   "currencyCode": "RSD",
+//   "tipRacuna": "PERSONAL",
+//   "initialBalance": 0,
+//   "createCard": true,
+//   "firma": {
+//     "naziv": "string",
+//     "maticniBroj": "54635850",
+//     "poreskiBroj": "656614034",
+//     "sifraDelatnosti": "string",
+//     "adresa": "string",
+//     "vlasnik": 0
+//   }
+// }
+
+
+// { A OVAKO ZA CHECKING RAČUN, API JE POST APIURL/employee/accounts/checking
+//   "nazivRacuna": "string",
+//   "idVlasnika": 0,
+//   "jmbg": "string",
+//   "vrstaRacuna": "STANDARDNI",
+//   "firma": {
+//     "naziv": "string",
+//     "maticniBroj": "82632648",
+//     "poreskiBroj": "123501003",
+//     "sifraDelatnosti": "string",
+//     "adresa": "string",
+//     "vlasnik": 0
+//   },
+//   "initialBalance": 0,
+//   "createCard": true
+// }
+
+
     const payload: AccountCreatePayload = {
-      kind: this.selectedKind as AccountKind,
-      subtype: this.selectedKind === AccountKind.TEKUCI ? this.selectedSubtype : null,
-      currency: this.selectedKind === AccountKind.DEVIZNI ? this.selectedCurrency : null,
-      ownerType:
-        this.selectedKind === AccountKind.DEVIZNI
-          ? (this.selectedOwnerType as AccountOwnerType)
-          : this.isBusiness()
-            ? AccountOwnerType.BUSINESS
-            : AccountOwnerType.PERSONAL,
-      ownerId: this.form.get('ownerId')?.value,
+      tipRacuna: this.selectedKind as AccountKind,
+      currencyCode: this.selectedKind?.toString(),
+      idVlasnika: this.form.get('ownerId')?.value,
       createCard: this.form.get('createCard')?.value,
-      initialBalance: this.form.get('initialBalance')?.value
+      initialBalance: this.form.get('initialBalance')?.value,
+      nazivRacuna: '',
+      jmbg: ''
     };
 
     if (this.isBusiness()) {
-      payload.company = {
-        name: this.form.get('companyName')?.value,
-        registrationNumber: this.form.get('companyNumber')?.value,
-        taxId: this.form.get('companyTaxId')?.value,
-        activityCode: this.form.get('companyActivityCode')?.value,
-        address: this.form.get('companyAddress')?.value
+      payload.firma = {
+        naziv: this.form.get('companyName')?.value,
+        maticniBroj: this.form.get('companyNumber')?.value,
+        poreskiBroj: this.form.get('companyTaxId')?.value,
+        sifraDelatnosti: this.form.get('companyActivityCode')?.value,    
+        adresa: this.form.get('companyAddress')?.value,
+        vlasnik: this.form.get('ownerId')?.value
       };
     }
 
@@ -288,15 +322,15 @@ export class AccountCreateComponent implements OnInit, OnDestroy {
   }
 
   public get isTekuci(): boolean {
-    return this.selectedKind === AccountKind.TEKUCI;
+    return this.selectedKind === AccountKind.CHECKING;
   }
 
   public get isDevizni(): boolean {
-    return this.selectedKind === AccountKind.DEVIZNI;
+    return this.selectedKind === AccountKind.FX;
   }
 
-  private get selectedKind(): AccountKind | null {
-    return this.form.get('kind')?.value ?? null;
+  private get selectedKind(): AccountKind {
+    return this.form.get('kind')?.value.toString();
   }
 
   private get selectedSubtype(): string | null {
@@ -353,13 +387,13 @@ export class AccountCreateComponent implements OnInit, OnDestroy {
     currencyControl?.clearValidators();
     currencyOwnerTypeControl?.clearValidators();
 
-    if (this.selectedKind === AccountKind.TEKUCI) {
+    if (this.selectedKind === AccountKind.CHECKING) {
       subtypeControl?.setValidators([Validators.required]);
       currencyControl?.setValue(null, { emitEvent: false });
       currencyOwnerTypeControl?.setValue(null, { emitEvent: false });
     }
 
-    if (this.selectedKind === AccountKind.DEVIZNI) {
+    if (this.selectedKind === AccountKind.FX) {
       currencyControl?.setValidators([Validators.required]);
       currencyOwnerTypeControl?.setValidators([Validators.required]);
       subtypeControl?.setValue(null, { emitEvent: false });

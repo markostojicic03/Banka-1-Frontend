@@ -1,7 +1,6 @@
 <app-navbar />
 
 <div class="account-create">
-
   <div class="form-card">
     <h3>Kreiraj račun</h3>
     <p class="description">Popunite polja kako biste kreirali novi račun</p>
@@ -81,7 +80,9 @@
         </div>
 
         <div class="actions">
-          <button type="button" class="btn-secondary" (click)="next()">Dalje</button>
+          <button type="button" class="btn-secondary" (click)="next()">
+            Dalje
+          </button>
         </div>
       </div>
 
@@ -103,7 +104,9 @@
         </div>
 
         <div class="new-client-action">
-          <button type="button" class="btn-secondary" (click)="openNewClient()">Novi klijent</button>
+          <button type="button" class="btn-secondary" (click)="openNewClient()">
+            Novi klijent
+          </button>
         </div>
 
         <div class="form-group">
@@ -132,13 +135,17 @@
           <div class="form-group">
             <label for="companyName">Naziv firme</label>
             <input id="companyName" formControlName="companyName" />
-            <small *ngIf="isInvalid('companyName')">Naziv firme je obavezan.</small>
+            <small *ngIf="isInvalid('companyName')"
+              >Naziv firme je obavezan.</small
+            >
           </div>
 
           <div class="form-group">
             <label for="companyNumber">Matični broj</label>
             <input id="companyNumber" formControlName="companyNumber" />
-            <small *ngIf="isInvalid('companyNumber')">Matični broj je obavezan.</small>
+            <small *ngIf="isInvalid('companyNumber')"
+              >Matični broj je obavezan.</small
+            >
           </div>
 
           <div class="form-group">
@@ -149,7 +156,10 @@
 
           <div class="form-group">
             <label for="companyActivityCode">Šifra delatnosti</label>
-            <input id="companyActivityCode" formControlName="companyActivityCode" />
+            <input
+              id="companyActivityCode"
+              formControlName="companyActivityCode"
+            />
             <small *ngIf="isInvalid('companyActivityCode')">
               Šifra delatnosti je obavezna.
             </small>
@@ -158,12 +168,16 @@
           <div class="form-group">
             <label for="companyAddress">Adresa</label>
             <input id="companyAddress" formControlName="companyAddress" />
-            <small *ngIf="isInvalid('companyAddress')">Adresa je obavezna.</small>
+            <small *ngIf="isInvalid('companyAddress')"
+              >Adresa je obavezna.</small
+            >
           </div>
         </div>
 
         <div class="actions">
-          <button type="button" class="btn-secondary" (click)="prev()">Nazad</button>
+          <button type="button" class="btn-secondary" (click)="prev()">
+            Nazad
+          </button>
           <button type="submit" class="btn-primary">Kreiraj račun</button>
         </div>
       </div>

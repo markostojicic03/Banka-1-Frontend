@@ -38,7 +38,7 @@ export class ClientService {
 
   getAllClients(): Observable<ClientDto[]> {
     const page = 0;
-    const size = 1000;
+    const size = 100;
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
