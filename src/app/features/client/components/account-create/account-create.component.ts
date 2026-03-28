@@ -257,7 +257,7 @@ export class AccountCreateComponent implements OnInit, OnDestroy {
         jmbg: '',
         currencyCode: this.selectedCurrency ?? 'EUR',
         tipRacuna: this.selectedOwnerType ?? AccountOwnerType.PERSONAL,
-        nazivRacuna: 'PERSONALNI',
+        nazivRacuna: 'Devizni racun',
         initialBalance,
         createCard
       };
@@ -287,10 +287,10 @@ export class AccountCreateComponent implements OnInit, OnDestroy {
       const payload: CheckingAccountCreatePayload = {
         idVlasnika: +ownerId,
         jmbg: '',
-        vrstaRacuna: subtypeMap[this.selectedSubtype ?? ''] ?? 'STANDARDNI',
+        vrstaRacuna: subtypeMap[this.selectedSubtype ?? ''] ?? 'CHECKING',
         initialBalance,
         createCard,
-        nazivRacuna: subtypeMap[this.selectedSubtype ?? ''] ?? 'STANDARDNI'
+        nazivRacuna: 'Tekuci racun'
       };
       if (companyPayload) {
         payload.firma = companyPayload;

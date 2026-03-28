@@ -129,15 +129,6 @@ export class AccountService {
     return this.http.get<Account>(`${this.baseUrl}/${id}`);
   }
 
-  /**
-   * Dohvata poslednjih N transakcija za dati račun.
-   * Koristi se na početnoj strani za prikaz poslednjih 5 transakcija.
-   */
-
-
-
-  //  'http://localhost/transactions/accounts/10101010101010101010?page=0&size=10' \
-
   getTransactions(
     accountNumber: number,
     page = 0,
