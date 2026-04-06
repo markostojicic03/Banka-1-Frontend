@@ -24,6 +24,7 @@ export class NavbarComponent implements OnInit {
   private readonly clientLinks: NavLink[] = [
     { label: 'Početna',    route: '/home',                icon: 'home' },
     { label: 'Računi',     route: '/accounts',            icon: 'account_balance' },
+    { label: 'Kartice',    route: '/home/cards', icon: 'credit_card' },
     { label: 'Plaćanja',   route: '/payments',            icon: 'payments' },
     { label: 'Prenos',     route: '/transfers/same',      icon: 'compare_arrows' },
     { label: 'Transfer',   route: '/transfers/different', icon: 'currency_exchange' },

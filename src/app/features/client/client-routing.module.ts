@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { AccountListComponent } from './components/account-list/account-list.component';
 import { NewPaymentComponent } from './components/new-payment/new-payment.component';
+import { CardListComponent } from './components/card-list/card-list.component';
 
 const routes: Routes = [
   {
@@ -12,7 +13,10 @@ const routes: Routes = [
   {
     path: 'accounts',
     component: AccountListComponent
-  }
+  },
+  { path: 'cards', component: CardListComponent },
+
+
 ];
 
 @NgModule({
