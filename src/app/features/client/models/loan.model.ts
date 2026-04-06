@@ -50,3 +50,33 @@ export interface Loan {
   nextInstallmentAmount?: number;
   nextInstallmentDate?: string;
 }
+
+
+/**
+ * DTO za slanje zahteva na backend
+ */
+export interface LoanRequestDto {
+  loanType: string;
+  interestRateType: string;
+  amount: number;
+  currency: string;
+  repaymentPeriod: number;
+  purpose: string;
+  monthlyIncome: number;
+  employmentStatus: string;
+  employmentPeriod: number;
+  accountNumber: string;
+  contactPhone: string;
+}
+
+/**
+ * Interfejs za odgovor nakon uspešnog podnošenja zahteva
+ */
+export interface LoanRequestResponse {
+  id: string | number;
+  requestNumber: string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  message: string;
+  createdAt: string;
+}
+

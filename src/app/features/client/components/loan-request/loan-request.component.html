@@ -1,0 +1,200 @@
+<app-navbar />
+
+<div class="page-layout">
+  <div class="page-content max-w-3xl">
+    <!-- Success Message -->
+    <div *ngIf="successMessage && loanResponse" class="z-card p-6 bg-green-50 border border-green-200 mb-6">
+      <div class="flex items-start gap-4">
+        <svg class="w-6 h-6 text-green-600 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <div class="flex-1">
+          <h3 class="font-semibold text-green-900">Uspešno podnesen zahtev!</h3>
+          <p class="text-sm text-green-800 mt-1">{{ successMessage }}</p>
+          <p class="text-xs text-green-700 mt-2">Bićete preusmeren na listu kredita za par sekundi...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage && !successMessage" class="z-card p-6 bg-red-50 border border-red-200 mb-6">
+      <div class="flex items-start gap-4">
+        <svg class="w-6 h-6 text-red-600 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <div class="flex-1">
+          <h3 class="font-semibold text-red-900">Greška pri podnošenju</h3>
+          <p class="text-sm text-red-800 mt-1">{{ errorMessage }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Header -->
+    <div class="z-card p-8 mb-6">
+      <div class="text-center">
+        <h1 class="text-3xl font-bold text-foreground">Zahtev za novi kredit</h1>
+        <p class="text-sm text-muted-foreground mt-2">Popunite formu da biste podneli zahtev za kredit</p>
+      </div>
+    </div>
+
+    <!-- Main Form -->
+    <form [formGroup]="form" (ngSubmit)="submit()" *ngIf="!successMessage">
+      <!-- SEKCIJA 1: VRSTA I IZNOS -->
+      <div class="z-card p-8 mb-6">
+        <h2 class="text-xl font-bold text-foreground border-l-4 border-primary pl-4 mb-6">Sekcija 1: Vrsta i iznos kredita</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Vrsta kredita -->
+          <div class="space-y-1.5">
+            <label for="loanType" class="z-label">Vrsta kredita <span class="text-red-500">*</span></label>
+            <select id="loanType" formControlName="loanType" class="z-select">
+              <option [ngValue]="null">-- odaberi vrstu kredita --</option>
+              <option *ngFor="let option of loanTypeOptions; trackBy: trackByLoanType" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+            <small *ngIf="isInvalid('loanType')" class="z-error">{{ getErrorMessage('loanType') }}</small>
+          </div>
+
+          <!-- Tip kamatne stope -->
+          <div class="space-y-1.5">
+            <label for="interestRateType" class="z-label">Tip kamatne stope <span class="text-red-500">*</span></label>
+            <select id="interestRateType" formControlName="interestRateType" class="z-select">
+              <option [ngValue]="null">-- odaberi tip stope --</option>
+              <option *ngFor="let option of interestRateOptions; trackBy: trackByInterestRate" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+            <small *ngIf="isInvalid('interestRateType')" class="z-error">{{ getErrorMessage('interestRateType') }}</small>
+          </div>
+
+          <!-- Iznos kredita -->
+          <div class="space-y-1.5">
+            <label for="amount" class="z-label">Iznos kredita <span class="text-red-500">*</span></label>
+            <input id="amount" type="number" formControlName="amount" class="z-input" min="100" step="100" placeholder="Unesite iznos" />
+            <small *ngIf="isInvalid('amount')" class="z-error">{{ getErrorMessage('amount') }}</small>
+          </div>
+
+          <!-- Valuta -->
+          <div class="space-y-1.5">
+            <label for="currency" class="z-label">Valuta <span class="text-red-500">*</span></label>
+            <select id="currency" formControlName="currency" class="z-select">
+              <option *ngFor="let option of currencyOptions; trackBy: trackByCurrency" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+            <small *ngIf="isInvalid('currency')" class="z-error">{{ getErrorMessage('currency') }}</small>
+          </div>
+
+          <!-- Rok otplate -->
+          <div class="space-y-1.5">
+            <label for="repaymentPeriod" class="z-label">Rok otplate (meseci) <span class="text-red-500">*</span></label>
+            <select id="repaymentPeriod" formControlName="repaymentPeriod" class="z-select">
+              <option [ngValue]="null">-- odaberi rok --</option>
+              <option *ngFor="let term of repaymentTermOptions; trackBy: trackByRepaymentTerm" [value]="term">
+                {{ term }} meseci ({{ (term / 12) | number: '1.1-1' }} godina)
+              </option>
+            </select>
+            <small *ngIf="isInvalid('repaymentPeriod')" class="z-error">{{ getErrorMessage('repaymentPeriod') }}</small>
+            <small *ngIf="!form.get('loanType')?.value" class="text-amber-600">Prvo odaberite vrstu kredita</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEKCIJA 2: FINANSIJSKI PODACI -->
+      <div class="z-card p-8 mb-6">
+        <h2 class="text-xl font-bold text-foreground border-l-4 border-primary pl-4 mb-6">Sekcija 2: Finansijski podaci</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Svrha kredita -->
+          <div class="md:col-span-2 space-y-1.5">
+            <label for="purpose" class="z-label">Svrha kredita <span class="text-red-500">*</span></label>
+            <input id="purpose" type="text" formControlName="purpose" class="z-input" placeholder="Npr. Kupovina automobila, renoviranje kuće..." />
+            <small *ngIf="isInvalid('purpose')" class="z-error">{{ getErrorMessage('purpose') }}</small>
+          </div>
+
+          <!-- Mesečna plata -->
+          <div class="space-y-1.5">
+            <label for="monthlyIncome" class="z-label">Mesečna plata <span class="text-red-500">*</span></label>
+            <input id="monthlyIncome" type="number" formControlName="monthlyIncome" class="z-input" min="1" step="100" placeholder="Unesite mesečnu platu" />
+            <small *ngIf="isInvalid('monthlyIncome')" class="z-error">{{ getErrorMessage('monthlyIncome') }}</small>
+          </div>
+
+          <!-- Status zaposlenja -->
+          <div class="space-y-1.5">
+            <label for="employmentStatus" class="z-label">Status zaposlenja <span class="text-red-500">*</span></label>
+            <select id="employmentStatus" formControlName="employmentStatus" class="z-select">
+              <option [ngValue]="null">-- odaberi status --</option>
+              <option *ngFor="let option of employmentStatusOptions; trackBy: trackByEmploymentStatus" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+            <small *ngIf="isInvalid('employmentStatus')" class="z-error">{{ getErrorMessage('employmentStatus') }}</small>
+          </div>
+
+          <!-- Period zaposlenja -->
+          <div class="space-y-1.5">
+            <label for="employmentPeriod" class="z-label">Period zaposlenja (meseci) <span class="text-red-500">*</span></label>
+            <input id="employmentPeriod" type="number" formControlName="employmentPeriod" class="z-input" min="0" step="1" placeholder="Npr. 24 meseca" />
+            <small *ngIf="isInvalid('employmentPeriod')" class="z-error">{{ getErrorMessage('employmentPeriod') }}</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEKCIJA 3: RAČUN I KONTAKT -->
+      <div class="z-card p-8 mb-6">
+        <h2 class="text-xl font-bold text-foreground border-l-4 border-primary pl-4 mb-6">Sekcija 3: Račun i kontakt</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Izbor računa -->
+          <div class="md:col-span-2 space-y-1.5">
+            <label for="accountNumber" class="z-label">Račun za uplatu ({{ form.get('currency')?.value || 'RSD' }}) <span class="text-red-500">*</span></label>
+            <select id="accountNumber" formControlName="accountNumber" class="z-select">
+              <option [ngValue]="''">-- odaberi račun --</option>
+              <optgroup label="Aktivni računi">
+                <option *ngFor="let account of filteredAccounts; trackBy: trackByAccount" [value]="account.accountNumber">
+                  {{ account.name }} ({{ account.accountNumber }}) - {{ account.balance | number: '1.2-2' }} {{ account.currency }}
+                </option>
+              </optgroup>
+            </select>
+            <small *ngIf="isInvalid('accountNumber')" class="z-error">{{ getErrorMessage('accountNumber') }}</small>
+            <small *ngIf="filteredAccounts.length === 0 && form.get('currency')?.value" class="text-amber-600">
+              Nema dostupnih računa sa valutom {{ form.get('currency')?.value }}
+            </small>
+          </div>
+
+          <!-- Kontakt telefon -->
+          <div class="space-y-1.5">
+            <label for="contactPhone" class="z-label">Kontakt telefon <span class="text-red-500">*</span></label>
+            <input id="contactPhone" type="tel" formControlName="contactPhone" class="z-input" placeholder="+381 (60) 123-4567" />
+            <small *ngIf="isInvalid('contactPhone')" class="z-error">{{ getErrorMessage('contactPhone') }}</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Akcije (Dugmići) -->
+      <div class="z-card p-8 flex items-center justify-end gap-4">
+        <button type="button" (click)="cancel()" class="z-btn-outline">
+          Otkaži
+        </button>
+        <button
+          type="submit"
+          [disabled]="isSubmitting || !form.valid"
+          class="z-btn-primary flex items-center gap-2"
+        >
+          <span *ngIf="!isSubmitting">Podnesi zahtev</span>
+          <span *ngIf="isSubmitting" class="flex items-center gap-2">
+            <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+            </svg>
+            Slanje...
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+

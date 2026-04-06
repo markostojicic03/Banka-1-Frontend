@@ -120,7 +120,7 @@ export class LoanListComponent implements OnInit, OnDestroy {
   viewLoanDetails(loanId: string | number | undefined): void {
     if (loanId !== undefined) {
       // Stavili smo tačnu apsolutnu putanju sa kosom crtom na početku
-      this.router.navigate(['/home/loans', loanId]); 
+      this.router.navigate(['/home/loans', loanId]);
     }
   }
 
@@ -136,6 +136,6 @@ export class LoanListComponent implements OnInit, OnDestroy {
    * Navigate to loan request form
    */
   requestNewLoan(): void {
-    this.router.navigate(['/client/loans/request']);
+    this.router.navigate(['/loans/request']);
   }
 }
