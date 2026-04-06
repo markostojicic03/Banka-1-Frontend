@@ -4,6 +4,7 @@ import { HomeComponent } from './home/home.component';
 import { AccountListComponent } from './components/account-list/account-list.component';
 import { NewPaymentComponent } from './components/new-payment/new-payment.component';
 import { CardListComponent } from './components/card-list/card-list.component';
+import {RequestCardComponent} from "@/features/client/components/request-card/request-card.component";
 
 const routes: Routes = [
   {
@@ -15,6 +16,7 @@ const routes: Routes = [
     component: AccountListComponent
   },
   { path: 'cards', component: CardListComponent },
+  {path: 'cards/request', component: RequestCardComponent },
 
 
 ];
