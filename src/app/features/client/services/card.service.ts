@@ -69,7 +69,7 @@ export interface CardRequestResponseDto {
 @Injectable({ providedIn: 'root' })
 export class CardService {
   private readonly accountsBase = `${environment.apiUrl}/accounts/client`;
-  private readonly cardsBase = `${environment.apiUrl}/cards`;
+  private readonly cardsBase = `${environment.apiUrl}/api/cards`;
 
   constructor(private readonly http: HttpClient) {}
 

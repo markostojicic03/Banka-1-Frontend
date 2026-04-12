@@ -64,7 +64,32 @@ export class ExchangeRateService {
   private mapResponse(res: any): ExchangeRatesResult {
     console.log('Exchange rates response from backend:', res);
     
-    // Ako backend već vraća nizom u očekivanom formatu
+    // Direktan niz sa novim backend formatom (currencyCode, buyingRate, sellingRate)
+    if (Array.isArray(res)) {
+      const rates: ExchangeRate[] = res
+        .filter((rate: any) => 
+          rate.currencyCode && rate.buyingRate !== undefined && rate.sellingRate !== undefined
+        )
+        .map((rate: any) => ({
+          currency: rate.currencyCode,
+          name: CURRENCY_META[rate.currencyCode]?.name || rate.currencyCode,
+          flag: CURRENCY_META[rate.currencyCode]?.flag || '',
+          buyRate: rate.buyingRate,
+          sellRate: rate.sellingRate,
+          middleRate: (rate.buyingRate + rate.sellingRate) / 2,
+        }));
+      
+      if (rates.length === 0) {
+        throw new Error('Nema validnih kurseva u API odgovoru');
+      }
+
+      return {
+        rates,
+        lastUpdated: res[0]?.createdAt ? new Date(res[0].createdAt) : new Date(),
+      };
+    }
+
+    // Ako backend vraća nizom u očekivanom formatu sa starijom strukturom
     if (res.rates && Array.isArray(res.rates)) {
       const rates = res.rates.filter((rate: any) => 
         rate.currency && rate.buyRate !== undefined && rate.sellRate !== undefined

@@ -1,16 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import {
   AccountDto,
   AuthorizedPersonGender,
   CardBrand,
   CardRequestRecipientType,
-  CardService
+  CardService,
 } from '../../services/card.service';
 import { NavbarComponent } from '@/shared/components/navbar/navbar.component';
+import { environment } from 'src/environments/environment';
+import { AuthService } from '@/core/services/auth.service';
+import { ToastService } from '@/shared/services/toast.service';
 
 type FlowStep = 1 | 2 | 3;
 type ResultState = 'success' | 'error' | '';
@@ -20,7 +23,7 @@ type ResultState = 'success' | 'error' | '';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, NavbarComponent],
   templateUrl: './request-card.component.html',
-  styleUrls: ['./request-card.component.scss']
+  styleUrls: ['./request-card.component.scss'],
 })
 export class RequestCardComponent implements OnInit {
   public isLoading = false;
@@ -46,11 +49,10 @@ export class RequestCardComponent implements OnInit {
     gender: 'MALE' as AuthorizedPersonGender,
     email: '',
     phone: '',
-    address: ''
+    address: '',
   };
 
   public verificationCode = '';
-  public generatedVerificationCode = '';
   public verificationId: number | null = null;
 
   public cardCountForSelectedAccount = 0;
@@ -59,21 +61,35 @@ export class RequestCardComponent implements OnInit {
     { value: 'VISA', label: 'Visa' },
     { value: 'MASTERCARD', label: 'MasterCard' },
     { value: 'DINACARD', label: 'DinaCard' },
-    { value: 'AMEX', label: 'AmEx' }
+    { value: 'AMEX', label: 'AmEx' },
   ];
 
-  public readonly recipientOptions: { value: CardRequestRecipientType; label: string }[] = [
+  public readonly recipientOptions: {
+    value: CardRequestRecipientType;
+    label: string;
+  }[] = [
     { value: 'OWNER', label: 'Vlasnik računa' },
-    { value: 'AUTHORIZED_PERSON', label: 'Ovlašćeno lice' }
+    { value: 'AUTHORIZED_PERSON', label: 'Ovlašćeno lice' },
   ];
 
-  public readonly genderOptions: { value: AuthorizedPersonGender; label: string }[] = [
+  public readonly genderOptions: {
+    value: AuthorizedPersonGender;
+    label: string;
+  }[] = [
     { value: 'MALE', label: 'Muški' },
     { value: 'FEMALE', label: 'Ženski' },
-    { value: 'OTHER', label: 'Drugo' }
+    { value: 'OTHER', label: 'Drugo' },
   ];
 
-  constructor(private readonly cardService: CardService) {}
+  private isSendingCode = false;
+  private sessionId: number | null = null;
+
+  constructor(
+    private readonly cardService: CardService,
+    private readonly http: HttpClient,
+    private readonly authService: AuthService,
+    private readonly toastService: ToastService,
+  ) {}
 
   public ngOnInit(): void {
     this.loadAccounts();
@@ -92,13 +108,15 @@ export class RequestCardComponent implements OnInit {
         this.errorMessage =
           err.error?.message || 'Greška pri učitavanju računa.';
         this.isLoading = false;
-      }
+      },
     });
   }
 
   public onAccountChange(): void {
     this.selectedAccount =
-      this.accounts.find(acc => acc.brojRacuna === this.selectedAccountNumber) || null;
+      this.accounts.find(
+        (acc) => acc.brojRacuna === this.selectedAccountNumber,
+      ) || null;
 
     this.cardCountForSelectedAccount = 0;
     this.errorMessage = '';
@@ -107,18 +125,23 @@ export class RequestCardComponent implements OnInit {
       return;
     }
 
-    this.cardService.getAccountDetails(this.selectedAccount.brojRacuna).subscribe({
-      next: (details) => {
-        this.cardCountForSelectedAccount = details.cards?.length ?? 0;
-      },
-      error: () => {
-        this.cardCountForSelectedAccount = 0;
-      }
-    });
+    this.cardService
+      .getAccountDetails(this.selectedAccount.brojRacuna)
+      .subscribe({
+        next: (details) => {
+          this.cardCountForSelectedAccount = details.cards?.length ?? 0;
+        },
+        error: () => {
+          this.cardCountForSelectedAccount = 0;
+        },
+      });
   }
 
   public isBusinessSelected(): boolean {
-    return !!this.selectedAccount && this.cardService.isBusinessAccount(this.selectedAccount);
+    return (
+      !!this.selectedAccount &&
+      this.cardService.isBusinessAccount(this.selectedAccount)
+    );
   }
 
   public canContinueToVerification(): boolean {
@@ -159,7 +182,8 @@ export class RequestCardComponent implements OnInit {
     }
 
     if (this.hasPersonalLimitReached()) {
-      this.errorMessage = 'Za lični račun već je dostignut maksimalan broj kartica (2).';
+      this.errorMessage =
+        'Za lični račun već je dostignut maksimalan broj kartica (2).';
       return;
     }
 
@@ -168,17 +192,57 @@ export class RequestCardComponent implements OnInit {
       return;
     }
 
-    if (this.isBusinessSelected() && this.recipientType === 'AUTHORIZED_PERSON' && !this.isAuthorizedPersonValid()) {
+    if (
+      this.isBusinessSelected() &&
+      this.recipientType === 'AUTHORIZED_PERSON' &&
+      !this.isAuthorizedPersonValid()
+    ) {
       this.errorMessage = 'Popunite sva polja za ovlašćeno lice.';
       return;
     }
 
-    this.sendMockVerificationCode();
+    this.sendVerificationCode();
     this.step = 2;
   }
 
   public resendVerificationCode(): void {
-    this.sendMockVerificationCode();
+    this.sendVerificationCode();
+  }
+
+  private sendVerificationCode(): void {
+    this.isSendingCode = true;
+    this.errorMessage = '';
+
+    const clientId = this.authService.getUserIdFromToken();
+    const clientEmail = this.authService.getLoggedUser()?.email;
+
+    if (!clientId || !clientEmail || !this.selectedAccount) {
+      this.toastService.error('Nije moguće poslati verifikacioni kod.');
+      this.isSendingCode = false;
+      return;
+    }
+
+    this.http
+      .post<{ sessionId: number }>(
+        `${environment.apiUrl}/verification/generate`,
+        {
+          clientId,
+          operationType: 'CARD_REQUEST',
+          relatedEntityId: this.selectedAccount.brojRacuna,
+          clientEmail,
+        },
+      )
+      .subscribe({
+        next: (res) => {
+          this.sessionId = res.sessionId;
+          this.isSendingCode = false;
+          this.toastService.info('Verifikacioni kod je poslat na vaš email.');
+        },
+        error: () => {
+          this.isSendingCode = false;
+          this.toastService.error('Greška pri slanju verifikacionog koda.');
+        },
+      });
   }
 
   public confirmVerification(): void {
@@ -189,14 +253,38 @@ export class RequestCardComponent implements OnInit {
       return;
     }
 
-    if (this.verificationCode !== this.generatedVerificationCode) {
-      this.errorMessage = 'Kod nije ispravan.';
+    if (!this.sessionId) {
+      this.errorMessage = 'Greška: verifikacijska sesija nije inicijalizovana.';
       return;
     }
 
-    this.verificationId = Date.now();
+    this.isLoading = true;
 
-    this.submitRequest();
+    this.http
+      .post<{ status: string }>(
+        `${environment.apiUrl}/verification/validate`,
+        {
+          sessionId: this.sessionId,
+          code: this.verificationCode,
+        },
+      )
+      .subscribe({
+        next: (res) => {
+          if (res.status === 'VERIFIED') {
+            this.verificationId = this.sessionId;
+            this.isLoading = false;
+            this.submitRequest();
+          } else {
+            this.isLoading = false;
+            this.errorMessage = 'Kodeks nije verifikovan. Pokušajte ponovo.';
+          }
+        },
+        error: (err: HttpErrorResponse) => {
+          this.isLoading = false;
+          this.errorMessage =
+            err.error?.message || 'Kod nije ispravan. Pokušajte ponovo.';
+        },
+      });
   }
 
   public backToStepOne(): void {
@@ -210,8 +298,8 @@ export class RequestCardComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
     this.verificationCode = '';
-    this.generatedVerificationCode = '';
     this.verificationId = null;
+    this.sessionId = null;
   }
 
   public getAccountLabel(account: AccountDto): string {
@@ -219,7 +307,11 @@ export class RequestCardComponent implements OnInit {
   }
 
   private submitRequest(): void {
-    if (!this.selectedAccount || !this.verificationId || this.cardLimit === null) {
+    if (
+      !this.selectedAccount ||
+      !this.verificationId ||
+      this.cardLimit === null
+    ) {
       this.errorMessage = 'Nedostaju podaci za slanje zahteva.';
       return;
     }
@@ -228,68 +320,70 @@ export class RequestCardComponent implements OnInit {
     this.errorMessage = '';
 
     if (!this.isBusinessSelected()) {
-      this.cardService.requestPersonalCard({
-        accountNumber: this.selectedAccount.brojRacuna,
-        cardBrand: this.cardBrand,
-        cardLimit: this.cardLimit,
-        verificationId: this.verificationId
-      }).subscribe({
-        next: (response) => this.handleRequestSuccess(response.message),
-        error: (err: HttpErrorResponse) => this.handleRequestError(err)
-      });
+      this.cardService
+        .requestPersonalCard({
+          accountNumber: this.selectedAccount.brojRacuna,
+          cardBrand: this.cardBrand,
+          cardLimit: this.cardLimit,
+          verificationId: this.verificationId,
+        })
+        .subscribe({
+          next: (response) => this.handleRequestSuccess(response.message),
+          error: (err: HttpErrorResponse) => this.handleRequestError(err),
+        });
       return;
     }
 
-    this.cardService.requestBusinessCard({
-      accountNumber: this.selectedAccount.brojRacuna,
-      recipientType: this.recipientType,
-      authorizedPersonId: null,
-      authorizedPerson: this.recipientType === 'AUTHORIZED_PERSON'
-        ? { ...this.authorizedPerson }
-        : null,
-      cardBrand: this.cardBrand,
-      cardLimit: this.cardLimit,
-      verificationId: this.verificationId
-    }).subscribe({
-      next: (response) => this.handleRequestSuccess(response.message),
-      error: (err: HttpErrorResponse) => this.handleRequestError(err)
-    });
+    this.cardService
+      .requestBusinessCard({
+        accountNumber: this.selectedAccount.brojRacuna,
+        recipientType: this.recipientType,
+        authorizedPersonId: null,
+        authorizedPerson:
+          this.recipientType === 'AUTHORIZED_PERSON'
+            ? { ...this.authorizedPerson }
+            : null,
+        cardBrand: this.cardBrand,
+        cardLimit: this.cardLimit,
+        verificationId: this.verificationId,
+      })
+      .subscribe({
+        next: (response) => this.handleRequestSuccess(response.message),
+        error: (err: HttpErrorResponse) => this.handleRequestError(err),
+      });
   }
 
   private handleRequestSuccess(message?: string): void {
     this.isLoading = false;
     this.resultState = 'success';
-    this.successMessage = message || 'Zahtev za novu karticu je uspešno evidentiran.';
+    this.successMessage =
+      message || 'Zahtev za novu karticu je uspešno evidentiran.';
     this.step = 3;
   }
 
   private handleRequestError(err: HttpErrorResponse): void {
     this.isLoading = false;
     this.resultState = 'error';
-    this.errorMessage = err.error?.message || 'Došlo je do greške pri kreiranju zahteva.';
+    this.errorMessage =
+      err.error?.message || 'Došlo je do greške pri kreiranju zahteva.';
     this.step = 3;
   }
 
-  private sendMockVerificationCode(): void {
-    this.generatedVerificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    this.verificationCode = '';
-    this.errorMessage = '';
-
-    // DEV helper dok nema pravog mail servisa
-    console.log('Mock verification code:', this.generatedVerificationCode);
-  }
-
   private hasPersonalLimitReached(): boolean {
-    return !!this.selectedAccount &&
+    return (
+      !!this.selectedAccount &&
       !this.isBusinessSelected() &&
-      this.cardCountForSelectedAccount >= 2;
+      this.cardCountForSelectedAccount >= 2
+    );
   }
 
   private hasBusinessOwnerLimitReached(): boolean {
-    return !!this.selectedAccount &&
+    return (
+      !!this.selectedAccount &&
       this.isBusinessSelected() &&
       this.recipientType === 'OWNER' &&
-      this.cardCountForSelectedAccount >= 1;
+      this.cardCountForSelectedAccount >= 1
+    );
   }
 
   private isAuthorizedPersonValid(): boolean {
