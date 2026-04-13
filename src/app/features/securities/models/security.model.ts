@@ -37,6 +37,10 @@ export interface Stock extends Security {
   pe?: number;
   dividend?: number;
   dividendYield?: number;
+  dollarVolume?: number;
+  outstandingShares?: number;
+  contractSize?: number;
+  priceHistory?: PricePoint[];
 }
 
 /**
@@ -104,6 +108,9 @@ export interface PricePoint {
   date: string;
   price: number;
   volume?: number;
+  change?: number;
+  changePercent?: number;
+  dollarVolume?: number;
 }
 
 /**

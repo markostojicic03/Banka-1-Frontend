@@ -42,11 +42,11 @@ export class ActuaryManagementComponent implements OnInit {
     // Reset edit mode when reloading data
     this.cancelEditLimit();
 
-    const nameParts = this.filterName.trim().split(/\s+/);
+    const nameParts = this.filterName.trim().split(/\s+/).filter(p => p.length > 0);
     const filters = {
       email: this.filterEmail.trim() || undefined,
       ime: nameParts[0] || undefined,
-      prezime: nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined,
+      prezime: nameParts.length > 1 ? nameParts.slice(1).join(' ') : (nameParts[0] || undefined),
       pozicija: this.filterPosition.trim() || undefined
     };
 

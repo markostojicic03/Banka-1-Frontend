@@ -7,6 +7,7 @@ import { takeUntil } from 'rxjs/operators';
 import { NavbarComponent } from '../../../../shared/components/navbar/navbar.component';
 import { AuthService } from '../../../../core/services/auth.service';
 import { SecuritiesService } from '../../services/securities.service';
+import { ToastService } from '../../../../shared/services/toast.service';
 import {
   Security,
   Stock,
@@ -53,7 +54,8 @@ export class SecuritiesListComponent implements OnInit, OnDestroy {
   constructor(
     private readonly securitiesService: SecuritiesService,
     private readonly authService: AuthService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -76,6 +78,17 @@ export class SecuritiesListComponent implements OnInit, OnDestroy {
     this.filters.search = this.searchQuery;
     this.currentPage = 0;
     this.loadSecurities();
+  }
+
+  refreshSecurities(): void {
+    this.isLoading = true;
+    this.securitiesService.refreshAllStocks().pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => this.loadSecurities(),
+      error: () => {
+        this.toastService.error('Greška pri osvežavanju podataka.');
+        this.isLoading = false;
+      }
+    });
   }
 
   loadSecurities(): void {
@@ -147,7 +160,32 @@ export class SecuritiesListComponent implements OnInit, OnDestroy {
   }
 
   applyFilters(): void {
-    this.filters = { ...this.draftFilters, search: this.searchQuery };
+    const f = this.draftFilters;
+    if (f.priceMin !== undefined && f.priceMax !== undefined && f.priceMin > f.priceMax) {
+      this.toastService.error('Minimalna cena ne može biti veća od maksimalne.');
+      return;
+    }
+    if (f.volumeMin !== undefined && f.volumeMax !== undefined && f.volumeMin > f.volumeMax) {
+      this.toastService.error('Minimalni volumen ne može biti veći od maksimalnog.');
+      return;
+    }
+    if (f.marginMin !== undefined && f.marginMax !== undefined && f.marginMin > f.marginMax) {
+      this.toastService.error('Minimalna marža ne može biti veća od maksimalne.');
+      return;
+    }
+    if (f.bidMin !== undefined && f.bidMax !== undefined && f.bidMin > f.bidMax) {
+      this.toastService.error('Minimalni bid ne može biti veći od maksimalnog.');
+      return;
+    }
+    if (f.askMin !== undefined && f.askMax !== undefined && f.askMin > f.askMax) {
+      this.toastService.error('Minimalni ask ne može biti veći od maksimalnog.');
+      return;
+    }
+    if (f.settlementDateFrom && f.settlementDateTo && f.settlementDateFrom > f.settlementDateTo) {
+      this.toastService.error('Datum izmirenja "od" ne može biti posle datuma "do".');
+      return;
+    }
+    this.filters = { ...f, search: this.searchQuery };
     this.currentPage = 0;
     this.loadSecurities();
     this.closeFilterPanel();
