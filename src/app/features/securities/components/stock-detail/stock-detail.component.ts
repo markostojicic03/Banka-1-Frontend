@@ -264,37 +264,46 @@ export class StockDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       ctx.fillText(price.toFixed(2), padding - 5, y + 4);
     }
 
-    // Draw line chart
-    ctx.beginPath();
-    ctx.strokeStyle = '#16a34a';
-    ctx.lineWidth = 2;
-    ctx.lineJoin = 'round';
+    const xStep = data.length > 1 ? chartWidth / (data.length - 1) : 0;
+    const getX = (i: number) => data.length === 1 ? padding + chartWidth / 2 : padding + xStep * i;
+    const getY = (price: number) => data.length === 1
+      ? padding + chartHeight / 2
+      : padding + chartHeight - ((price - minPrice) / priceRange) * chartHeight;
 
-    data.forEach((point, index) => {
-      const x = padding + (chartWidth / (data.length - 1)) * index;
-      const y = padding + chartHeight - ((point.price - minPrice) / priceRange) * chartHeight;
+    if (data.length === 1) {
+      // Draw a single dot
+      const x = getX(0);
+      const y = getY(data[0].price);
+      ctx.beginPath();
+      ctx.arc(x, y, 5, 0, Math.PI * 2);
+      ctx.fillStyle = '#16a34a';
+      ctx.fill();
+    } else {
+      // Draw line chart
+      ctx.beginPath();
+      ctx.strokeStyle = '#16a34a';
+      ctx.lineWidth = 2;
+      ctx.lineJoin = 'round';
 
-      if (index === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
-      }
-    });
+      data.forEach((point, index) => {
+        const x = getX(index);
+        const y = getY(point.price);
+        if (index === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
 
-    ctx.stroke();
+      ctx.stroke();
 
-    // Fill area under line
-    const lastX = padding + chartWidth;
+      // Fill area under line
+      ctx.lineTo(getX(data.length - 1), height - padding);
+      ctx.lineTo(padding, height - padding);
+      ctx.closePath();
 
-    ctx.lineTo(lastX, height - padding);
-    ctx.lineTo(padding, height - padding);
-    ctx.closePath();
-
-    const gradient = ctx.createLinearGradient(0, padding, 0, height - padding);
-    gradient.addColorStop(0, 'rgba(22, 163, 74, 0.3)');
-    gradient.addColorStop(1, 'rgba(22, 163, 74, 0.05)');
-    ctx.fillStyle = gradient;
-    ctx.fill();
+      const gradient = ctx.createLinearGradient(0, padding, 0, height - padding);
+      gradient.addColorStop(0, 'rgba(22, 163, 74, 0.3)');
+      gradient.addColorStop(1, 'rgba(22, 163, 74, 0.05)');
+      ctx.fillStyle = gradient;
+      ctx.fill();
+    }
 
     // Draw date labels
     ctx.fillStyle = '#6b7280';
@@ -303,8 +312,8 @@ export class StockDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const labelCount = Math.min(5, data.length);
     for (let i = 0; i < labelCount; i++) {
-      const dataIndex = Math.floor((i / (labelCount - 1)) * (data.length - 1));
-      const x = padding + (chartWidth / (data.length - 1)) * dataIndex;
+      const dataIndex = labelCount > 1 ? Math.floor((i / (labelCount - 1)) * (data.length - 1)) : 0;
+      const x = getX(dataIndex);
       const date = new Date(data[dataIndex].date);
       const label = date.toLocaleDateString('sr-RS', { month: 'short', year: '2-digit' });
       ctx.fillText(label, x, height - padding + 15);

@@ -20,8 +20,13 @@ import {
 @Injectable({ providedIn: 'root' })
 export class SecuritiesService {
   private readonly stocksUrl = `${environment.apiUrl}/stock/api/listings/stocks`;
+  private readonly refreshAllUrl = `${environment.apiUrl}/stock/admin/stocks/refresh-all`;
 
   constructor(private readonly http: HttpClient) {}
+
+  refreshAllStocks(): Observable<any> {
+    return this.http.post(`${this.refreshAllUrl}`, {});
+  }
 
   private mapStockItem(item: any): Stock {
     return {

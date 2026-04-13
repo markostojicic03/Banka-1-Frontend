@@ -80,6 +80,17 @@ export class SecuritiesListComponent implements OnInit, OnDestroy {
     this.loadSecurities();
   }
 
+  refreshSecurities(): void {
+    this.isLoading = true;
+    this.securitiesService.refreshAllStocks().pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => this.loadSecurities(),
+      error: () => {
+        this.toastService.error('Greška pri osvežavanju podataka.');
+        this.isLoading = false;
+      }
+    });
+  }
+
   loadSecurities(): void {
     this.isLoading = true;
     this.errorMessage = '';
