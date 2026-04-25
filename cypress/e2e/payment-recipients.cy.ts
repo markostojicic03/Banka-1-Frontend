@@ -15,7 +15,7 @@ describe('Payment Recipients Component', () => {
     }).as('getAccounts');
 
     // Presretanje dohvatanja primalaca
-    cy.intercept('GET', '**/payments/accounts/**', {
+    cy.intercept('GET', '**/payments/recipients', {
       statusCode: 200,
       body: { content: MOCK_RECIPIENTS }
     }).as('getRecipients');

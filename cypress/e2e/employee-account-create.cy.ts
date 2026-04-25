@@ -31,7 +31,7 @@ describe('AccountCreate', () => {
 
   beforeEach(() => {
     // Intercept client loading so the HTTP request completes and doesn't leave the UI spinning or uninitialized causing disabled fields
-    cy.intercept('GET', '**/clients/customers*', {
+    cy.intercept('GET', '**/clients*', {
       statusCode: 200,
       body: {
         content: [

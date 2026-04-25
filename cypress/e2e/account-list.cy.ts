@@ -68,17 +68,21 @@ const MOCK_ACCOUNTS = [
 ];
 
 const setAuth = (): void => {
-  localStorage.setItem('authToken', 'fake-jwt-token');
-  localStorage.setItem('loggedUser', JSON.stringify({
-    email: 'klijent@test.com',
-    role: 'Client',
-    permissions: []
-  }));
+  cy.window().then(win => {
+    win.localStorage.setItem('authToken', 'fake-jwt-token');
+    win.localStorage.setItem('loggedUser', JSON.stringify({
+      email: 'klijent@test.com',
+      role: 'Client',
+      permissions: []
+    }));
+  });
 };
 
 const clearAuth = (): void => {
-  localStorage.removeItem('authToken');
-  localStorage.removeItem('loggedUser');
+  cy.window().then(win => {
+    win.localStorage.removeItem('authToken');
+    win.localStorage.removeItem('loggedUser');
+  });
 };
 
 describe('Account List Component (F2)', () => {
@@ -105,7 +109,7 @@ describe('Account List Component (F2)', () => {
     }).as('getAccounts');
 
     // Also intercept the transactions API call that runs immediately after an account is selected.
-    cy.intercept('GET', '**/transactions/employee/accounts/*', {
+    cy.intercept('GET', '**/transactions/client/accounts/*', {
       statusCode: 200,
       body: { content: [], totalElements: 0, totalPages: 0 }
     }).as('getTransactions');

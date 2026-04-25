@@ -22,10 +22,12 @@ describe('Employee List Component', () => {
     }).as('getEmployees');
 
     // Set auth token to bypass guard
-    window.localStorage.setItem('authToken', 'fake-jwt-token');
-    window.localStorage.setItem('loggedUser', JSON.stringify({
-      email: 'admin@test.com', role: 'EmployeeAdmin', permissions: ['EMPLOYEE_MANAGE_ALL']
-    }));
+    cy.window().then(win => {
+      win.localStorage.setItem('authToken', 'fake-jwt-token');
+      win.localStorage.setItem('loggedUser', JSON.stringify({
+        email: 'admin@test.com', role: 'EmployeeAdmin', permissions: ['EMPLOYEE_MANAGE_ALL']
+      }));
+    });
 
     cy.visit('/employees');
     cy.wait('@getEmployees');

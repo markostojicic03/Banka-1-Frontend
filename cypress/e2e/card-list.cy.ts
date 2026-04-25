@@ -70,17 +70,21 @@ const MOCK_ACCOUNT_DETAILS_2 = {
 };
 
 const setAuth = (): void => {
-  localStorage.setItem('authToken', 'fake-jwt-token');
-  localStorage.setItem('loggedUser', JSON.stringify({
-    email: 'klijent@test.com',
-    role: 'CLIENT_BASIC',
-    permissions: ['BANKING_BASIC']
-  }));
+  cy.window().then(win => {
+    win.localStorage.setItem('authToken', 'fake-jwt-token');
+    win.localStorage.setItem('loggedUser', JSON.stringify({
+      email: 'klijent@test.com',
+      role: 'CLIENT_BASIC',
+      permissions: ['BANKING_BASIC']
+    }));
+  });
 };
 
 const clearAuth = (): void => {
-  localStorage.removeItem('authToken');
-  localStorage.removeItem('loggedUser');
+  cy.window().then(win => {
+    win.localStorage.removeItem('authToken');
+    win.localStorage.removeItem('loggedUser');
+  });
 };
 
 describe('Card List Component (F3)', () => {

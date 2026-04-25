@@ -127,7 +127,7 @@ function interceptPreview() {
 }
 
 function interceptTransfer() {
-  cy.intercept('POST', '**/transfers/', {
+  cy.intercept('POST', '**/transfers/different', {
     statusCode: 200,
     body: { id: 'transfer-123', status: 'COMPLETED' }
   }).as('executeTransfer');

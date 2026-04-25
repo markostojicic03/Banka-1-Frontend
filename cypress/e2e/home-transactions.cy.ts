@@ -131,7 +131,7 @@ describe('Home - Pregled transakcija (F9)', () => {
       body: { content: mockAccounts, totalElements: 2, totalPages: 1, number: 0, size: 10 }
     }).as('getAccounts');
 
-    cy.intercept('GET', '**/transactions/employee/accounts/**', {
+    cy.intercept('GET', '**/transactions/client/accounts/**', {
       statusCode: 200,
       body: { content: mockTransactions, totalElements: 5, totalPages: 1, number: 0, size: 5 }
     }).as('getTransactions');

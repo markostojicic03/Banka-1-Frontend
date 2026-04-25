@@ -24,8 +24,10 @@ describe('Actuary Management Component (F12)', () => {
       req.reply({ statusCode: 200, body: MOCK_AGENTS });
     }).as('getAgents');
 
-    window.localStorage.setItem('authToken', 'fake-jwt-token');
-    window.localStorage.setItem('loggedUser', JSON.stringify(supervisorUser));
+    cy.window().then(win => {
+      win.localStorage.setItem('authToken', 'fake-jwt-token');
+      win.localStorage.setItem('loggedUser', JSON.stringify(supervisorUser));
+    });
 
     cy.visit('/actuary-management');
     cy.wait('@getAgents');

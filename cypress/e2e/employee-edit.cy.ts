@@ -35,10 +35,12 @@ describe('Employee Edit Modal Component', () => {
     cy.intercept('PUT', '**/employees/1', { statusCode: 200, body: {} }).as('updateEmployee');
 
     // Set auth
-    window.localStorage.setItem('authToken', 'fake-jwt-token');
-    window.localStorage.setItem('loggedUser', JSON.stringify({
-      email: 'admin@test.com', role: 'EmployeeAdmin', permissions: ['EMPLOYEE_MANAGE_ALL']
-    }));
+    cy.window().then(win => {
+      win.localStorage.setItem('authToken', 'fake-jwt-token');
+      win.localStorage.setItem('loggedUser', JSON.stringify({
+        email: 'admin@test.com', role: 'EmployeeAdmin', permissions: ['EMPLOYEE_MANAGE_ALL']
+      }));
+    });
 
     cy.visit('/employees');
     cy.wait('@getEmployees');

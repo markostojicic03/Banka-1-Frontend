@@ -5,10 +5,12 @@ describe('Employee Create Page', () => {
 
   beforeEach(() => {
     // Set auth token to bypass guard
-    localStorage.setItem('authToken', 'fake-jwt-token');
-    localStorage.setItem('loggedUser', JSON.stringify({
-      email: 'admin@test.com', role: 'EmployeeAdmin', permissions: ['EMPLOYEE_MANAGE_ALL']
-    }));
+    cy.window().then(win => {
+      win.localStorage.setItem('authToken', 'fake-jwt-token');
+      win.localStorage.setItem('loggedUser', JSON.stringify({
+        email: 'admin@test.com', role: 'EmployeeAdmin', permissions: ['EMPLOYEE_MANAGE_ALL']
+      }));
+    });
 
     cy.visit('/employees/new');
   });
