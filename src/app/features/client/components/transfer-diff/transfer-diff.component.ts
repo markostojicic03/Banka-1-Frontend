@@ -6,9 +6,11 @@ import { Account } from '../../models/account.model';
 import { AccountService } from '../../services/account.service';
 import { TransferService, TransferResponse } from '../../services/transfer.service';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { NotificationService } from '../../../../shared/services/notification.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { NavbarComponent } from '../../../../shared/components/navbar/navbar.component';
 import { VerificationModalComponent } from '../../modals/verification-modal/verification-modal.component';
+import { NotificationType } from '../../../../shared/models/notification.model';
 
 type Step = 'form' | 'confirm' | 'success';
 
@@ -38,6 +40,7 @@ export class TransferDiffComponent implements OnInit {
     private accountService: AccountService,
     private transferService: TransferService,
     private toastService: ToastService,
+    private notificationService: NotificationService,
     private authService: AuthService,
     private router: Router
   ) {}
@@ -140,6 +143,14 @@ export class TransferDiffComponent implements OnInit {
         this.transferResult = result;
         this.step = 'success';
         this.toastService.success('Transfer je uspešno izvršen!');
+        
+        // Add notification
+        this.notificationService.addNotification({
+          type: NotificationType.TRANSFER,
+          title: 'Transfer izršen',
+          message: `Transfer od ${payload.amount} ${this.selectedFromAccount?.currency} sa računa ${payload.fromAccountNumber} na račun ${payload.toAccountNumber} je uspešno izvršen.`,
+          data: { transferResponse: result }
+        });
       },
       error: (err) => {
         this.isSubmitting = false;

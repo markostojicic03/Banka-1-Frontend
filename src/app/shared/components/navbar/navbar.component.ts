@@ -1,7 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../services/notification.service';
+import { NotificationPanelComponent } from '../notification-panel/notification-panel.component';
 
 interface NavLink {
   label: string;
@@ -12,14 +16,18 @@ interface NavLink {
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, NotificationPanelComponent],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
   navLinks: NavLink[] = [];
   userRole = '';
   userName = '';
+  isNotificationPanelOpen = false;
+  unreadCount = 0;
+
+  private destroy$ = new Subject<void>();
   private readonly portfolioLink: NavLink = { label: 'Moj portfolio', route: '/portfolio', icon: 'work' };
 
   private readonly clientLinks: NavLink[] = [
@@ -55,7 +63,10 @@ export class NavbarComponent implements OnInit {
     { label: 'Porez', route: '/tax-tracking', icon: 'account_balance' },
   ];
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private notificationService: NotificationService
+  ) {}
 
   ngOnInit(): void {
     const user = this.authService.getLoggedUser();
@@ -72,6 +83,26 @@ export class NavbarComponent implements OnInit {
         ...(permissions.includes('FUND_AGENT_MANAGE') ? this.supervisorLinks : [])
       ];
     }
+
+    // Subscribe to unread notifications count
+    this.notificationService.unreadCount$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(count => {
+        this.unreadCount = count;
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  toggleNotificationPanel(): void {
+    this.isNotificationPanelOpen = !this.isNotificationPanelOpen;
+  }
+
+  closeNotificationPanel(): void {
+    this.isNotificationPanelOpen = false;
   }
 
   isClient(): boolean {

@@ -8,6 +8,8 @@ import { NavbarComponent } from '../../../../shared/components/navbar/navbar.com
 import { VerificationModalComponent } from '../../modals/verification-modal/verification-modal.component';
 import { PaymentRecipient } from '../../models/account.model';
 import { ClientService, NewPaymentDto } from '../../services/client.service';
+import { NotificationService } from '../../../../shared/services/notification.service';
+import { NotificationType } from '../../../../shared/models/notification.model';
 
 @Component({
   selector: 'app-new-payment',
@@ -30,6 +32,7 @@ export class NewPaymentComponent implements OnInit {
     private fb: FormBuilder,
     private accountService: AccountService,
     private clientService: ClientService,
+    private notificationService: NotificationService,
     private router: Router
   ) {}
 
@@ -115,6 +118,13 @@ export class NewPaymentComponent implements OnInit {
 
     this.clientService.createPayment(dto).subscribe({
       next: () => {
+        // Add notification for successful payment
+        this.notificationService.addNotification({
+          type: NotificationType.PAYMENT,
+          title: 'Plaćanje izvršeno',
+          message: `Plaćanje od ${this.formatAmount(dto.amount)} sa računa ${dto.fromAccountNumber} primacu ${dto.recipientName} je uspešno izvršeno.`,
+          data: { paymentDto: dto }
+        });
         this.checkIfNewRecipient(form.senderAccount, form.receiverAccount);
       },
       error: () => {
