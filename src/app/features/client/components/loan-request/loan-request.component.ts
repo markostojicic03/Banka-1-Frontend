@@ -6,6 +6,8 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { LoanService } from '../../services/loan.service';
 import { AccountService } from '../../services/account.service';
+import { NotificationService } from '../../../../shared/services/notification.service';
+import { NotificationType } from '../../../../shared/models/notification.model';
 import {
   LoanRequestDto,
   LoanRequestResponse,
@@ -81,6 +83,7 @@ export class LoanRequestComponent implements OnInit, OnDestroy {
     private readonly fb: FormBuilder,
     private readonly loanService: LoanService,
     private readonly accountService: AccountService,
+    private readonly notificationService: NotificationService,
     private readonly router: Router
   ) {
     this.initializeForm();
