@@ -106,6 +106,12 @@ export class NotificationPanelComponent implements OnInit, OnDestroy {
       [NotificationType.LOAN_CREATED]: 'description',
       [NotificationType.LOAN_APPROVED]: 'check_circle',
       [NotificationType.LOAN_REJECTED]: 'cancel',
+      [NotificationType.ORDER_PENDING]: 'schedule',
+      [NotificationType.ORDER_APPROVED]: 'done',
+      [NotificationType.ORDER_REJECTED]: 'close',
+      [NotificationType.ORDER_COMPLETED]: 'check_circle',
+      [NotificationType.ORDER_PARTIAL_FILL]: 'assignment_turned_in',
+      [NotificationType.ORDER_CANCELLED]: 'cancel',
     };
     return iconMap[type] || 'notifications';
   }
@@ -122,6 +128,12 @@ export class NotificationPanelComponent implements OnInit, OnDestroy {
       [NotificationType.LOAN_CREATED]: 'text-purple-600',
       [NotificationType.LOAN_APPROVED]: 'text-green-600',
       [NotificationType.LOAN_REJECTED]: 'text-red-600',
+      [NotificationType.ORDER_PENDING]: 'text-yellow-600',
+      [NotificationType.ORDER_APPROVED]: 'text-green-600',
+      [NotificationType.ORDER_REJECTED]: 'text-red-600',
+      [NotificationType.ORDER_COMPLETED]: 'text-green-600',
+      [NotificationType.ORDER_PARTIAL_FILL]: 'text-blue-600',
+      [NotificationType.ORDER_CANCELLED]: 'text-red-600',
     };
     return colorMap[type] || 'text-gray-600';
   }
@@ -138,6 +150,12 @@ export class NotificationPanelComponent implements OnInit, OnDestroy {
       [NotificationType.LOAN_CREATED]: 'bg-purple-50',
       [NotificationType.LOAN_APPROVED]: 'bg-green-50',
       [NotificationType.LOAN_REJECTED]: 'bg-red-50',
+      [NotificationType.ORDER_PENDING]: 'bg-yellow-50',
+      [NotificationType.ORDER_APPROVED]: 'bg-green-50',
+      [NotificationType.ORDER_REJECTED]: 'bg-red-50',
+      [NotificationType.ORDER_COMPLETED]: 'bg-green-50',
+      [NotificationType.ORDER_PARTIAL_FILL]: 'bg-blue-50',
+      [NotificationType.ORDER_CANCELLED]: 'bg-red-50',
     };
     return colorMap[type] || 'bg-gray-50';
   }

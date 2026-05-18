@@ -358,3 +358,27 @@
 .notification-loan_rejected {
   border-left: 3px solid #ef4444;
 }
+
+.notification-order_pending {
+  border-left: 3px solid #eab308;
+}
+
+.notification-order_approved {
+  border-left: 3px solid #22c55e;
+}
+
+.notification-order_rejected {
+  border-left: 3px solid #ef4444;
+}
+
+.notification-order_completed {
+  border-left: 3px solid #22c55e;
+}
+
+.notification-order_partial_fill {
+  border-left: 3px solid #3b82f6;
+}
+
+.notification-order_cancelled {
+  border-left: 3px solid #ef4444;
+}
